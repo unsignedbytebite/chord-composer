@@ -8,18 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Install dependacies
+    - name: Install dependencies
       run: sudo apt-get install libsdl2-dev
     - uses: actions/checkout@v1
-    - name: Build
+    - name: Release Build
+      run: cargo build --release
+    - name: Test (eng)
       run: cargo build --verbose --features no-audio
-    - name: Run tests
-      run: cargo test --verbose    
-    - name: Build zhn
+    - name: Test (zhn)
       run: cargo build --verbose --features "zhn no-audio"
-    - name: Run tests
-      run: cargo test --verbose
-    - name: Build pt
+    - name: Test (pt)
       run: cargo build --verbose --features "pt no-audio"
-    - name: Run tests
-      run: cargo test --verbose
