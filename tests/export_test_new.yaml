@@ -1,0 +1,37 @@
+name: bc_000_a
+
+# Can be overridden by patterns
+master:
+    key: D
+    time: 128
+    signature: [3, 5]
+
+chords:
+    - [custom1, [0, 3, 8]]
+
+patterns:
+    - name: part_a
+      pattern:
+          - [1,1,1, MAJOR_SEVENTH, 0]
+          - [1,3,1, custom1, 0]
+          - [2,1,1, MAJOR_NINTH, 0]
+          - [2,3,1, custom1, 0]
+          - [3,1,1, MAJOR_SEVENTH, 3]
+          - [2,2,1, custom1, 0]
+          - [3,1,1, MAJOR_NINTH, -3]
+          - [3,2,1, custom1, 0]
+
+    - name: part_b
+      master:
+          signature: [4, 8]
+          key: Cs
+          time: 69
+      pattern:
+          - [1,1,1, MAJOR_SEVENTH, 0]
+          - [1,2,1, custom1, 0]
+          - [2,1,1, MAJOR_NINTH, 0]
+          - [2,2,1, custom1, 0]
+          - [3,1,1, MAJOR_SEVENTH, 3]
+          - [2,2,1, custom1, 0]
+          - [3,1,1, MAJOR_NINTH, -3]
+          - [3,2,1, custom1, 0]

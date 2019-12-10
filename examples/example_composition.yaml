@@ -1,0 +1,32 @@
+name: Example Composition
+
+# Can be overridden by patterns
+master:
+    key: D
+    time: 105
+
+chords:
+    - [custom1, [0, 5, -2]]
+    - [custom2, [0, 3, 5]]
+    - [custom3, [-5, -2, 1]]
+
+patterns:
+    - name: part A
+      pattern:
+          - [1, 1, 1, MINOR, 0]
+          - [3, 1, 1, MINOR, 5] 
+          - [4, 1, 1, MINOR, 3] 
+          - [5, 1, 1, MINOR, 0]
+          - [7, 1, 1, custom1, -3]
+          - [8, 1, 5, ?, 3]
+    - name: part B
+      master:
+        signature: [5, 4]
+      pattern:
+          - [1, 1, 1, MINOR, 0]
+          - [2, 4, 1, ?, 5] 
+          - [3, 1, 1, MINOR, 3] 
+          - [4, 4, 1, ?, 0]
+          - [5, 1, 1, custom1, -3]
+
+

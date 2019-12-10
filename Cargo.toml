@@ -1,0 +1,21 @@
+[package]
+name = "chord_composer"
+version = "0.2.2"
+authors = ["cj <unsignedbytebite@gmail.com>"]
+edition = "2018"
+
+[features]
+eng = []
+pt = []
+zhn = []
+
+[dependencies]
+rodio = "*"
+stopwatch = "*"
+serde = "*"
+serde_yaml = "*"
+serde_derive = "*"
+clap = "*"
+ghakuf = "*"
+rand = "*"
+music-timer = "*"

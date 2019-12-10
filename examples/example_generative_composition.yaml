@@ -1,0 +1,30 @@
+name: example_generative_composition
+
+# Can be overridden by patterns
+master:
+    key: D
+    time: 105
+
+chords:
+    - [minor, [0, 3, 7]]
+    - [major, [0, 4, 7]]
+    - [power, [0, 7]]
+
+patterns:
+    - name: custom generation
+      pattern:
+          - [1, 1, 1, ?, 0]
+          - [2, 1, 1, ?, 0] 
+          - [3, 1, 1, ?, 0] 
+          - [4, 1, 1, ?, 0]
+          - [4, 2, 1, ?, 0]
+    - name: full generation
+      pattern:
+          - [1, 1, 1, ??, 0]
+          - [2, 1, 1, ??, 0] 
+          - [3, 1, 1, ??, 0] 
+          - [4, 1, 1, ??, 0]
+          - [4, 2, 1, ??, 0]
+
+
+

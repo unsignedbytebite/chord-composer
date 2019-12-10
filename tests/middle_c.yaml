@@ -1,0 +1,11 @@
+name: middle_c
+
+# Can be overridden by patterns
+
+chords:
+    - [middle_c, [12]]
+
+patterns:
+    - name: part_a
+      pattern:
+          - [1, 1, 1, middle_c, 0]
