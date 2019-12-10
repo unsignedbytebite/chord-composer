@@ -8,6 +8,7 @@ edition = "2018"
 eng = []
 pt = []
 zhn = []
+no-audio = []
 
 [dependencies]
 rodio = "*"
