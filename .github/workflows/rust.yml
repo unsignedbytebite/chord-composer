@@ -12,14 +12,14 @@ jobs:
       run: sudo apt-get install libsdl2-dev
     - uses: actions/checkout@v1
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --verbose --features no-audio
     - name: Run tests
       run: cargo test --verbose    
     - name: Build zhn
-      run: cargo build --verbose --features zhn
+      run: cargo build --verbose --features "zhn no-audio"
     - name: Run tests
       run: cargo test --verbose
     - name: Build pt
-      run: cargo build --verbose --features pt
+      run: cargo build --verbose --features "pt no-audio"
     - name: Run tests
       run: cargo test --verbose
