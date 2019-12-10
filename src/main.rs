@@ -257,3 +257,22 @@ fn main() {
     println!("{}", strings::STRING_HELP)
   }
 }
+
+#[test]
+fn test_language() {
+  use language::strings;
+
+  if cfg!(any(feature = "eng", all(not(feature = "zhn"), not(feature = "pt")))) {
+    assert_eq!(strings::STRING_TITLE, "Chord Composer");
+  } else if cfg!(feature = "pt") {
+    assert_eq!(
+      strings::STRING_TITLE,
+      "Chord Composer (Compositor de acorde)"
+    );
+  } else if cfg!(feature = "zhn") {
+    assert_eq!(strings::STRING_TITLE, "Chord Composer (和弦作曲家)");
+  }
+  else {
+    assert!(false, "No language supplied");
+  }
+}
