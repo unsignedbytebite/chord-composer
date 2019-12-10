@@ -4,10 +4,12 @@ on: [push]
 
 jobs:
   build:
-
+    
     runs-on: ubuntu-latest
-
+    
     steps:
+    - name: Install dependacies
+      run: sudo apt-get install libsdl2-dev
     - uses: actions/checkout@v1
     - name: Build
       run: cargo build --verbose
