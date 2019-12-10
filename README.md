@@ -4,6 +4,8 @@
 
 The philosophy behind **Chord Composer** is to make a lightweight, portable, and accessible tool to structure chord patterns and progressions for music composition ideas. It must fit into common digital music writing workflows and not hinder the creative process of the user.
 
+Powered by: [music-timer](https://github.com/unsignedbytebite/music-timer)
+
 ## Features
 
 - Describe compositions with patterns in `YAML`.
