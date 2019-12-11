@@ -4,13 +4,13 @@
 
 The philosophy behind **Chord Composer** is to make a lightweight, portable, and accessible tool to structure chord patterns and progressions for music composition ideas. It must fit into common digital music writing workflows and not hinder the creative process of the user.
 
-Powered by: [music-timer](https://github.com/unsignedbytebite/music-timer)
+![](http://0x0a141e.co.uk/github/chord-composer/screen00.png)
 
 ## Features
 
 - Describe compositions with patterns in `YAML`.
 - Export _composition patterns_ to `MIDI` clips.
-- Playback _composition patterns_ in the command line.
+- Playback _composition patterns_ with a piano in the command line.
 - Command line interface.
 - Cross-platform.
 - Languages:
@@ -26,41 +26,53 @@ Powered by: [music-timer](https://github.com/unsignedbytebite/music-timer)
 - Explore the need to support common trackers.
 - Support more languages (including pirate).
 
-## Command line arguments
-
-- `play <COMPOSITION_FILE>` : Playback a _composition_.
-  - Options:
-    - `--metronome` : Play a metronome during playback.
-  - Example:
-    ```shell
-    ./chord_composer play ./my_idea.yaml --metronome
-    ```
-- `export <COMPOSITION_FILE>` : Export a _composition_ to _pattern_ `MIDI` clips.
-  - Example:
-    ```shell
-    ./chord_composer export ./my_idea.yaml
-    ```
-- `chords` : Prints to the terminal the internal supported _chord keywords_ and their intervals.
-  - Example:
-    ```shell
-    ./chord_composer chords
-    ```
-- `template <EXPORT_PATH>` : Export a template of the _composition parameters_ `YAML` file.
-  - Example:
-    ```shell
-    ./chord_composer template ./my_new_idea.yaml
-    ```
-- `--help` : Prints to the terminal the list of supported commands.
-  - Example:
-    ```shell
-    ./chord_composer --help
-    ```
-
 ## Latest Binaries
 
 - Linux: _TODO_
-- Windows: _TODO_
 - Mac: _TODO_
+- Window: _TODO_
+
+## Command line arguments
+
+> `./chord_composer --help`
+
+```shell
+Chord Composer 0.2.4
+Cj <unsignedbytebite@gmail.com>
+A music composition tool for structuring chord progressions and patterns.
+
+USAGE:
+    chord_composer.exe [SUBCOMMAND]
+
+FLAGS:
+    -h, --help       Prints help information
+    -V, --version    Prints version information
+
+SUBCOMMANDS:
+    chords      Print the list of supported chords and their intervals.
+    export      Export composition patterns to .MID.
+    help        Prints this message or the help of the given subcommand(s)
+    play        Playback patterns in a composition.
+    template    Export a composition arrangement YAML template
+```
+
+> `./chord_composer play --help`
+
+```
+Playback patterns in a composition.
+
+USAGE:
+    chord_composer.exe play [FLAGS] <COMPOSITION_FILE>
+
+FLAGS:
+    -h, --help         Prints help information
+        --metronome    Play a metronome during playback.
+    -V, --version      Prints version information
+
+ARGS:
+    <COMPOSITION_FILE>    The YAML composition arrangement file.
+```
+
 
 ## Build steps
 
@@ -78,6 +90,13 @@ Powered by: [music-timer](https://github.com/unsignedbytebite/music-timer)
     cd ./examples/
     ./play_composition.sh
     ```
+
+## Build Features
+
+- `eng` - Build with English strings.
+- `pt` - Build with Portugeuse strings.
+- `zhn` - Build with Chinese(Simplified) strings.
+- `no-audio` - Build without the support of audio playback.
 
 ## Composition Parameters `YAML` file
 

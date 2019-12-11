@@ -63,32 +63,58 @@ pub mod strings {
 //TODO: Is there a better approach for default features?
 #[cfg(any(feature = "eng", all(not(feature = "zhn"), not(feature = "pt"))))]
 pub mod strings {
+  // Errors/Warnings
   pub const STRING_FAIL_DESERIALIZE: &str =
     "⚡ Failed to deserialize file! Does it exist or have composition parameters?";
   pub const STRING_FAIL_EMPTY_PATTERNS: &str = "⚡ Patterns are empty!";
   pub const STRING_FAIL_NO_PATTERNS: &str = "⚡ No patterns found!";
   pub const STRING_FAIL_EXPORT_MIDI: &str = "⚡ Failed to export midi files!";
-  pub const STRING_EXPORTING: &str = "Exporting... ";
-  pub const STRING_EXPORTED: &str = "Exported";
-  pub const STRING_EXPORTED_COMPLETE: &str = "Export complete!";
-  pub const STRING_PLAYBACK_COMPLETE: &str = "Playback complete!";
-  pub const STRING_TEMPLATE_EXPORT_COMPLETE: &str = "Exported template!";
-  pub const STRING_TEMPLATE_EXPORT_FAIL: &str = "Failed to export template";
-  pub const STRING_TITLE: &str = "Chord Composer";
-  pub const STRING_ABOUT: &str = "A composition tool for chord arrangements";
-  pub const STRING_ABOUT_PLAY: &str = "Play an arrangement";
-  pub const STRING_HELP_COMPOSITION_FILE: &str = "The yaml file of the arrangement to play";
-  pub const STRING_HELP_METRONOME: &str = "Playback with a metronome";
-  pub const STRING_ABOUT_EXPORT: &str = "Export composition patterns to .mid";
-  pub const STRING_ABOUT_TEMPLATE_EXPORT: &str = "Export a composition template";
-  pub const STRING_PATH_TEMPLATE_EXPORT: &str = "Export path of the yaml template";
-  pub const STRING_ABOUT_CHORDS: &str = "Print the list of supported chords and their intervals";
-  pub const STRING_WARNING_ADDITIONAL: &str = "Additional commands required.";
-  pub const STRING_WARNING_NOT_FOUND: &str = "Cannot be found.";
-  pub const STRING_HELP: &str = "For more, use --help";
   pub const STRING_TIME_REVERSE: &str = "⚡ Time cannot reverse!";
   pub const STRING_BAD_TIME_SIGNATURE: &str = "⚡ Bad time signature! Denominator must be at least 1.  Numerators 2, 4, 8, 6, 16, 32 are only supported!";
   pub const STRING_UNREACHABLE_EVENT: &str = "⚡ The event cannot be reached";
   pub const STRING_FAIL_LOAD_SAMPLER: &str =
     "⚡ One of the instruments cannot be loaded or created for playback. Do they exist?";
+  pub const STRING_TEMPLATE_EXPORT_FAIL: &str = "⚡ Failed to export template!";
+  pub const STRING_WARNING_NOT_FOUND: &str = "⚡ Cannot be found.";
+  pub const STRING_WARNING_ADDITIONAL: &str = "⚡ Additional commands required.";
+
+  // Status
+  pub const STRING_EXPORTING: &str = "Exporting... ";
+  pub const STRING_EXPORTED: &str = "Exported";
+  pub const STRING_EXPORTED_COMPLETE: &str = "Export complete!";
+  pub const STRING_PLAYBACK_COMPLETE: &str = "Playback complete!";
+  pub const STRING_TEMPLATE_EXPORT_COMPLETE: &str = "Exported template!";
+
+  // About
+  pub const STRING_TITLE: &str = "Chord Composer";
+  pub const STRING_ABOUT: &str =
+    "A music composition tool for structuring chord progressions and patterns.";
+  pub const STRING_ABOUT_PLAY: &str = "Playback patterns in a composition.";
+  pub const STRING_HELP_COMPOSITION_FILE: &str = "The YAML composition arrangement file.";
+  pub const STRING_HELP_METRONOME: &str = "Play a metronome during playback.";
+  pub const STRING_ABOUT_EXPORT: &str = "Export composition patterns to .MID.";
+  pub const STRING_ABOUT_TEMPLATE_EXPORT: &str = "Export a composition arrangement YAML template";
+  pub const STRING_PATH_TEMPLATE_EXPORT: &str = "Export path of the YAML template";
+  pub const STRING_ABOUT_CHORDS: &str = "Print the list of supported chords and their intervals.";
+
+  pub const STRING_HELP: &str = "For more, use --help";
+}
+
+#[test]
+fn test_language() {
+  if cfg!(any(
+    feature = "eng",
+    all(not(feature = "zhn"), not(feature = "pt"))
+  )) {
+    assert_eq!(strings::STRING_TITLE, "Chord Composer");
+  } else if cfg!(feature = "pt") {
+    assert_eq!(
+      strings::STRING_TITLE,
+      "Chord Composer (Compositor de acorde)"
+    );
+  } else if cfg!(feature = "zhn") {
+    assert_eq!(strings::STRING_TITLE, "Chord Composer (和弦作曲家)");
+  } else {
+    assert!(false, "No language supplied");
+  }
 }

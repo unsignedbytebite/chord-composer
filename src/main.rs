@@ -12,6 +12,10 @@ use clap::{App, Arg, SubCommand};
 use language::strings;
 use music_timer::music_time::MusicTime;
 
+/// Parse the results of a chord composer interaction.
+///
+/// # Arguments
+/// * `result` - The result from the interaction.
 fn parse_result(result: &Result<SuccessResult, FailResult>) {
   match result {
     Ok(SuccessResult::Export(exported_files)) => {
@@ -83,7 +87,7 @@ fn load_and_play(file_path: &str, play_with_metronome: bool) {
     /// # Arguments
     /// * `composition` - The composition to play.
     fn on_ready(&mut self, composition: &Composition) {
-      println!("🎶 [ {} ] 🎶", composition.get_name());
+      println!("[ {} ]", composition.get_name());
     }
 
     /// Called when playback has a change in beat interval.
@@ -123,7 +127,7 @@ fn load_and_play(file_path: &str, play_with_metronome: bool) {
       };
 
       println!(
-        "| {:02}.{}.{} | 🎵 {}",
+        "| {:02}.{}.{} | {}",
         time.get_bar(),
         time.get_beat(),
         time.get_beat_interval(),
@@ -184,7 +188,7 @@ fn export_template(file_path: &str) {
 
 fn main() {
   let matches = App::new(strings::STRING_TITLE)
-    .version("0.2.2")
+    .version("0.2.4")
     .author("Cj <unsignedbytebite@gmail.com>")
     .about(strings::STRING_ABOUT)
     .subcommand(
@@ -258,21 +262,3 @@ fn main() {
   }
 }
 
-#[test]
-fn test_language() {
-  use language::strings;
-
-  if cfg!(any(feature = "eng", all(not(feature = "zhn"), not(feature = "pt")))) {
-    assert_eq!(strings::STRING_TITLE, "Chord Composer");
-  } else if cfg!(feature = "pt") {
-    assert_eq!(
-      strings::STRING_TITLE,
-      "Chord Composer (Compositor de acorde)"
-    );
-  } else if cfg!(feature = "zhn") {
-    assert_eq!(strings::STRING_TITLE, "Chord Composer (和弦作曲家)");
-  }
-  else {
-    assert!(false, "No language supplied");
-  }
-}
