@@ -235,11 +235,14 @@ fn parameters_to_composition(
                   let time = music_time::MusicTime::new(*bar, *beat, *beat_interval);
 
                   const INTERVAL_RESOLUTION: u8 = 16;
-                  let unreachable_beat_interval =
-                    time.get_beat_interval() > INTERVAL_RESOLUTION / 2;
-                  let unreachable_beat =
-                    time.get_beat() > pattern.get_time_signature().get_numerator();
-                  if unreachable_beat_interval || unreachable_beat {
+                  let unreachable_beat_interval = time.get_beat_interval()
+                    > INTERVAL_RESOLUTION / 2
+                    || time.get_beat_interval() == 0;
+                  let unreachable_beat = time.get_beat()
+                    > pattern.get_time_signature().get_numerator()
+                    || time.get_beat() == 0;
+                  let unreachable_bar = time.get_bar() == 0;
+                  if unreachable_bar || unreachable_beat_interval || unreachable_beat {
                     composition_result = Err(FailResult::UnreachableTime(
                       time,
                       pattern.len(),
@@ -406,47 +409,117 @@ fn test_flow_reverse() {
 
 #[test]
 fn test_unreachable_time() {
-  let params = io::deseralizer::deserialize_string(
-    r#"
+  {
+    let params = io::deseralizer::deserialize_string(
+      r#"
       patterns:
           - name: part_a
             pattern:
                 - [1,3,1, MAJOR_SEVENTH, 0]
                 - [1,2,9, custom1, 0]
         "#,
-  );
-  assert_ne!(params, Err(crate::FailResult::Deserialize));
+    );
+    assert_ne!(params, Err(crate::FailResult::Deserialize));
 
-  let compo = parameters_to_composition(&params.unwrap());
+    let compo = parameters_to_composition(&params.unwrap());
 
-  match compo {
-    Err(FailResult::UnreachableTime(music_time, index, chord)) => {
-      assert_eq!(music_time, music_time::MusicTime::new(1, 2, 9));
-      assert_eq!(index, 1);
-      assert_eq!(chord, "custom1".to_string());
+    match compo {
+      Err(FailResult::UnreachableTime(music_time, index, chord)) => {
+        assert_eq!(music_time, music_time::MusicTime::new(1, 2, 9));
+        assert_eq!(index, 1);
+        assert_eq!(chord, "custom1".to_string());
+      }
+      _ => assert_eq!(false, true),
     }
-    _ => assert_eq!(false, true),
   }
-
-  let params = io::deseralizer::deserialize_string(
-    r#"
+  {
+    let params = io::deseralizer::deserialize_string(
+      r#"
       patterns:
           - name: part_a
             pattern:
                 - [1,3,1, MAJOR_SEVENTH, 0]
                 - [1,9,1, custom1, 0]
         "#,
-  );
-  assert_ne!(params, Err(crate::FailResult::Deserialize));
+    );
+    assert_ne!(params, Err(crate::FailResult::Deserialize));
 
-  let compo = parameters_to_composition(&params.unwrap());
+    let compo = parameters_to_composition(&params.unwrap());
 
-  match compo {
-    Err(FailResult::UnreachableTime(music_time, index, chord)) => {
-      assert_eq!(music_time, music_time::MusicTime::new(1, 9, 1));
-      assert_eq!(index, 1);
-      assert_eq!(chord, "custom1".to_string());
+    match compo {
+      Err(FailResult::UnreachableTime(music_time, index, chord)) => {
+        assert_eq!(music_time, music_time::MusicTime::new(1, 9, 1));
+        assert_eq!(index, 1);
+        assert_eq!(chord, "custom1".to_string());
+      }
+      _ => assert_eq!(false, true),
     }
-    _ => assert_eq!(false, true),
+  }
+  {
+    let params = io::deseralizer::deserialize_string(
+      r#"
+      patterns:
+          - name: part_a
+            pattern:
+                - [1,3,1, MAJOR_SEVENTH, 0]
+                - [1,9,0, custom1, 0]
+        "#,
+    );
+    assert_ne!(params, Err(crate::FailResult::Deserialize));
+
+    let compo = parameters_to_composition(&params.unwrap());
+
+    match compo {
+      Err(FailResult::UnreachableTime(music_time, index, chord)) => {
+        assert_eq!(music_time, music_time::MusicTime::new(1, 9, 0));
+        assert_eq!(index, 1);
+        assert_eq!(chord, "custom1".to_string());
+      }
+      _ => assert_eq!(false, true),
+    }
+  }
+  {
+    let params = io::deseralizer::deserialize_string(
+      r#"
+      patterns:
+          - name: part_a
+            pattern:
+                - [1,0,1, custom1, 0]
+        "#,
+    );
+    assert_ne!(params, Err(crate::FailResult::Deserialize));
+
+    let compo = parameters_to_composition(&params.unwrap());
+
+    match compo {
+      Err(FailResult::UnreachableTime(music_time, index, chord)) => {
+        assert_eq!(music_time, music_time::MusicTime::new(1, 0, 1));
+        assert_eq!(index, 0);
+        assert_eq!(chord, "custom1".to_string());
+      }
+      _ => assert_eq!(false, true),
+    }
+  }
+  {
+    let params = io::deseralizer::deserialize_string(
+      r#"
+      patterns:
+          - name: part_a
+            pattern:
+                - [0,1,1, custom1, 0]
+        "#,
+    );
+    assert_ne!(params, Err(crate::FailResult::Deserialize));
+
+    let compo = parameters_to_composition(&params.unwrap());
+
+    match compo {
+      Err(FailResult::UnreachableTime(music_time, index, chord)) => {
+        assert_eq!(music_time, music_time::MusicTime::new(0, 1, 1));
+        assert_eq!(index, 0);
+        assert_eq!(chord, "custom1".to_string());
+      }
+      _ => assert!(false, true),
+    }
   }
 }

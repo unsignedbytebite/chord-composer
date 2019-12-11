@@ -37,8 +37,6 @@ The philosophy behind **Chord Composer** is to make a lightweight, portable, and
 > `./chord_composer --help`
 
 ```shell
-Chord Composer 0.2.4
-Cj <unsignedbytebite@gmail.com>
 A music composition tool for structuring chord progressions and patterns.
 
 USAGE:

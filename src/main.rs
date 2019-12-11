@@ -188,7 +188,7 @@ fn export_template(file_path: &str) {
 
 fn main() {
   let matches = App::new(strings::STRING_TITLE)
-    .version("0.2.4")
+    .version("0.2.5")
     .author("Cj <unsignedbytebite@gmail.com>")
     .about(strings::STRING_ABOUT)
     .subcommand(
