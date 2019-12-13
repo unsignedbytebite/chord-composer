@@ -77,9 +77,19 @@ fn export(file_path: &str) {
 /// # Arguments
 /// * `file_path` - The file path of the composition parameter yaml file.
 /// * `play_with_metronome` - Playback the composition with a metronome.
-fn load_and_play(file_path: &str, play_with_metronome: bool) {
+fn load_and_play(
+  file_path: &str,
+  play_with_metronome: bool,
+  ticker_bar: bool,
+  ticker_beat: bool,
+  ticker_interval: bool,
+) {
   /// The composition playback performance state.
-  struct State;
+  struct State {
+    ticker_bar: bool,
+    ticker_beat: bool,
+    ticker_interval: bool,
+  }
 
   impl PerformanceState for State {
     /// Called when the composition is ready for playback.
@@ -94,19 +104,46 @@ fn load_and_play(file_path: &str, play_with_metronome: bool) {
     ///
     /// # Arguments
     /// * `current_time` - The `MusicTime` which the callback has been triggered.
-    fn on_beat_interval_change(&mut self, _current_time: &MusicTime) {}
+    fn on_beat_interval_change(&mut self, current_time: &MusicTime) {
+      if self.ticker_interval {
+        println!(
+          "| {:02}.{}.{}",
+          current_time.get_bar(),
+          current_time.get_beat(),
+          current_time.get_beat_interval()
+        );
+      }
+    }
 
     /// Called when playback has a change in beat.
     ///
     /// # Arguments
     /// * `current_time` - The `MusicTime` which the callback has been triggered.
-    fn on_beat_change(&mut self, _current_time: &MusicTime) {}
+    fn on_beat_change(&mut self, current_time: &MusicTime) {
+      if self.ticker_beat {
+        println!(
+          "| {:02}.{}.{}",
+          current_time.get_bar(),
+          current_time.get_beat(),
+          current_time.get_beat_interval()
+        );
+      }
+    }
 
     /// Called when playback has a change in bar.
     ///
     /// # Arguments
     /// * `current_time` - The `MusicTime` which the callback has been triggered.
-    fn on_bar_change(&mut self, _current_time: &MusicTime) {}
+    fn on_bar_change(&mut self, current_time: &MusicTime) {
+      if self.ticker_bar {
+        println!(
+          "| {:02}.{}.{}",
+          current_time.get_bar(),
+          current_time.get_beat(),
+          current_time.get_beat_interval()
+        );
+      }
+    }
 
     /// Called when playback is triggering an event in the performance.
     ///
@@ -163,7 +200,12 @@ fn load_and_play(file_path: &str, play_with_metronome: bool) {
   }
 
   // Load and play a composition file
-  let mut performance_state = State;
+  let mut performance_state = State {
+    ticker_bar,
+    ticker_beat,
+    ticker_interval,
+  };
+
   parse_result(&chord_composer::play(
     file_path,
     &mut performance_state,
@@ -188,7 +230,7 @@ fn export_template(file_path: &str) {
 
 fn main() {
   let matches = App::new(strings::STRING_TITLE)
-    .version("0.2.5")
+    .version("0.2.6")
     .author("Cj <unsignedbytebite@gmail.com>")
     .about(strings::STRING_ABOUT)
     .subcommand(
@@ -204,6 +246,27 @@ fn main() {
             .long("metronome")
             .value_name("metronome")
             .help(strings::STRING_HELP_METRONOME)
+            .takes_value(false),
+        )
+        .arg(
+          Arg::with_name("ticker-bar")
+            .long("ticker-bar")
+            .value_name("ticker-bar")
+            .help(strings::STRING_HELP_TICKER_BAR)
+            .takes_value(false),
+        )
+        .arg(
+          Arg::with_name("ticker-beat")
+            .long("ticker-beat")
+            .value_name("ticker-beat")
+            .help(strings::STRING_HELP_TICKER_BEAT)
+            .takes_value(false),
+        )
+        .arg(
+          Arg::with_name("ticker-interval")
+            .long("ticker-interval")
+            .value_name("ticker-interval")
+            .help(strings::STRING_HELP_TICKER_INTERVAL)
             .takes_value(false),
         ),
     )
@@ -230,7 +293,13 @@ fn main() {
 
   if let Some(matches) = matches.subcommand_matches("play") {
     match matches.value_of("COMPOSITION_FILE") {
-      Some(file_name) => load_and_play(file_name, matches.is_present("metronome")),
+      Some(file_name) => load_and_play(
+        file_name,
+        matches.is_present("metronome"),
+        matches.is_present("ticker-bar"),
+        matches.is_present("ticker-beat"),
+        matches.is_present("ticker-interval"),
+      ),
       None => println!(
         "{} {}",
         strings::STRING_WARNING_ADDITIONAL,
@@ -261,4 +330,3 @@ fn main() {
     println!("{}", strings::STRING_HELP)
   }
 }
-

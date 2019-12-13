@@ -27,6 +27,10 @@ pub mod strings {
   pub const STRING_UNREACHABLE_EVENT: &str = "⚡ O evento não pode ser alcançado";
   pub const STRING_FAIL_LOAD_SAMPLER: &str =
     "⚡ Um dos instrumentos não pode ser carregado ou criado para reprodução. Eles existem?";
+  pub const STRING_HELP_TICKER_BAR: &str = "Imprime a hora atual em cada mudança de barra.";
+  pub const STRING_HELP_TICKER_BEAT: &str = "Imprime a hora atual em cada alteração de batida.";
+  pub const STRING_HELP_TICKER_INTERVAL: &str =
+    "Imprime a hora atual em cada alteração do intervalo de batida.";
 }
 
 #[cfg(feature = "zhn")]
@@ -58,6 +62,9 @@ pub mod strings {
     "⚡ 时间签名不好！分母必须至少为1. 仅支持数字, 4, 8, 6, 16, 32";
   pub const STRING_UNREACHABLE_EVENT: &str = "⚡ 无法达到事件";
   pub const STRING_FAIL_LOAD_SAMPLER: &str = "⚡ 无法加载或创建其中一种乐器进行播放。它们存在吗？";
+  pub const STRING_HELP_TICKER_BAR: &str = "在每个音乐栏更改上打印当前音乐时间.";
+  pub const STRING_HELP_TICKER_BEAT: &str = "在每次音乐节拍变化时打印当前音乐时间.";
+  pub const STRING_HELP_TICKER_INTERVAL: &str = "在每个音乐节拍间隔更改时打印当前音乐时间.";
 }
 
 //TODO: Is there a better approach for default features?
@@ -96,7 +103,10 @@ pub mod strings {
   pub const STRING_ABOUT_TEMPLATE_EXPORT: &str = "Export a composition arrangement YAML template";
   pub const STRING_PATH_TEMPLATE_EXPORT: &str = "Export path of the YAML template";
   pub const STRING_ABOUT_CHORDS: &str = "Print the list of supported chords and their intervals.";
-
+  pub const STRING_HELP_TICKER_BAR: &str = "Prints the current time on each bar change.";
+  pub const STRING_HELP_TICKER_BEAT: &str = "Prints the current time on each beat change.";
+  pub const STRING_HELP_TICKER_INTERVAL: &str =
+    "Prints the current time on each beat interval change.";
   pub const STRING_HELP: &str = "For more, use --help";
 }
 

@@ -104,6 +104,11 @@ fn pattern_to_midi_messages(pattern: &composition::Pattern) -> Vec<Message> {
   for i in 0..pattern.get_events().len() {
     let (music_time, intervals) = pattern.get(i);
 
+    // Skip empty intervals
+    if intervals.is_empty() {
+      continue;
+    }
+
     let mut push_event = |smf_note: u8, time: u32, velocity: u8| {
       messages.push(Message::MidiEvent {
         delta_time: time,

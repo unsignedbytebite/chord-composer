@@ -65,6 +65,9 @@ USAGE:
 FLAGS:
     -h, --help         Prints help information
         --metronome    Play a metronome during playback.
+        --ticker-bar         Prints the current time on each bar change.
+        --ticker-beat        Prints the current time on each beat change.
+        --ticker-interval    Prints the current time on each beat interval change.
     -V, --version      Prints version information
 
 ARGS:
