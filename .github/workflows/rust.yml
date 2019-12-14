@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    #- name: Install dependencies
-    #  run: sudo apt-get install libsdl2-dev
+    - name: Install dependencies
+      run: sudo apt-get install libsdl2-dev
     - uses: actions/checkout@v1
     - name: Release Build
       run: cargo build --release
