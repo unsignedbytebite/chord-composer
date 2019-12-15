@@ -33,9 +33,7 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
   pub fn new(
     composition: &'a composition::Composition,
     state: &'a mut State,
-    #[cfg(feature = "with-sound")]
     sample_paths_metronome: &Vec<String>,
-    #[cfg(feature = "with-sound")]
     sample_paths_piano: &Vec<String>,
   ) -> Result<Self, FailResult> {
     if composition.len() == 0 {
@@ -47,15 +45,7 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
     let sampler_metronome = basic_sampler::SamplerPlayer::new(sample_paths_metronome);
 
     #[cfg(feature = "with-sound")]
-    let sampler_piano = {
-      let mut sample_paths = Vec::new();
-      for i in 1..61 {
-        let path = format!("audio_assets/piano_instrument/piano ({}).ogg", i);
-        sample_paths.push(path);
-      }
-
-      basic_sampler::SamplerPlayer::new(&sample_paths)
-    };
+    let sampler_piano = basic_sampler::SamplerPlayer::new(&sample_paths_piano);
 
     #[cfg(feature = "with-sound")]
     let error_loading = sampler_metronome.is_err() || sampler_piano.is_err();
