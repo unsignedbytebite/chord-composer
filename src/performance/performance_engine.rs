@@ -33,8 +33,11 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
   pub fn new(
     composition: &'a composition::Composition,
     state: &'a mut State,
+    #[cfg(feature = "with-sound")]
     sample_paths_metronome: &Vec<String>,
+    #[cfg(feature = "with-sound")]
     sample_paths_piano: &Vec<String>,
+
   ) -> Result<Self, FailResult> {
     if composition.len() == 0 {
       // This should never panic IRL, the parsing should have picked up this error beforehand.
