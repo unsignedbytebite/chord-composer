@@ -4,7 +4,7 @@
 
 The philosophy behind **Chord Composer** is to make a lightweight, portable, and accessible tool to structure chord patterns and progressions for music composition ideas. It must fit into common digital music writing workflows and not hinder the creative process of the user.
 
-**A CLI inerface for this libary found [here](https://github.com/unsignedbytebite/chord-composer-interface).**
+**A CLI for this library found [here](https://github.com/unsignedbytebite/chord-composer-interface).**
 
 ## Features
 
