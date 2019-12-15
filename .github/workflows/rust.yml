@@ -11,11 +11,5 @@ jobs:
     # - name: Install dependencies
     #   run: sudo apt-get install libsdl2-dev
     - uses: actions/checkout@v1
-    - name: Release Build
-      run: cargo build --release --no-default-features
-    - name: Test (eng)
-      run: cargo build --verbose --no-default-features
-    - name: Test (zhn)
-      run: cargo build --verbose --no-default-features --features "zhn no-audio"
-    - name: Test (pt)
-      run: cargo build --verbose --no-default-features --features "pt no-audio"
+    - name: Test
+      run: cargo test --release --no-default-features
