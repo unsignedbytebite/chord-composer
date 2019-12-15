@@ -4,100 +4,20 @@
 
 The philosophy behind **Chord Composer** is to make a lightweight, portable, and accessible tool to structure chord patterns and progressions for music composition ideas. It must fit into common digital music writing workflows and not hinder the creative process of the user.
 
-![](http://0x0a141e.co.uk/github/chord-composer/screen00.png)
+**A CLI inerface for this libary found [here]().**
 
 ## Features
 
 - Describe compositions with patterns in `YAML`.
 - Export _composition patterns_ to `MIDI` clips.
-- Playback _composition patterns_ with a piano in the command line.
-- Command line interface.
-- Cross-platform.
-- Languages:
-  - English
-  - Português
-  - 简体中文
+- Playback _composition patterns_ with audio samples.
 
 ## Future Work
 
-- Build a terminal user interface.
 - Develop better audio engine and instrument sampler.
 - Support `MIDI` routing.
-- Explore the need to support common trackers.
-- Support more languages (including pirate).
+- Explore the need to support common msuic trackers.
 
-## Latest Binaries
-
-- Linux: _TODO_
-- Mac: _TODO_
-- Window: _TODO_
-
-## Command line arguments
-
-> `./chord_composer --help`
-
-```shell
-A music composition tool for structuring chord progressions and patterns.
-
-USAGE:
-    chord_composer.exe [SUBCOMMAND]
-
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
-
-SUBCOMMANDS:
-    chords      Print the list of supported chords and their intervals.
-    export      Export composition patterns to .MID.
-    help        Prints this message or the help of the given subcommand(s)
-    play        Playback patterns in a composition.
-    template    Export a composition arrangement YAML template
-```
-
-> `./chord_composer play --help`
-
-```
-Playback patterns in a composition.
-
-USAGE:
-    chord_composer.exe play [FLAGS] <COMPOSITION_FILE>
-
-FLAGS:
-    -h, --help         Prints help information
-        --metronome    Play a metronome during playback.
-        --ticker-bar         Prints the current time on each bar change.
-        --ticker-beat        Prints the current time on each beat change.
-        --ticker-interval    Prints the current time on each beat interval change.
-    -V, --version      Prints version information
-
-ARGS:
-    <COMPOSITION_FILE>    The YAML composition arrangement file.
-```
-
-
-## Build steps
-
-1. Install [Rust](https://www.rust-lang.org/).
-2. Clone this repo with [Git](https://git-scm.com/). _e.g_
-    ```shell
-    git clone https://github.com/unsignedbytebite/chord-composer.git 
-    ```
-3. Run `cargo test` in the repo's directory to ensure it's working. _e.g_
-    ```shell
-    cargo test
-    ```
-4. Open `./examples/` and run/look at the example scripts to see how to use **Chord Composer** _e.g_
-    ```shell
-    cd ./examples/
-    ./play_composition.sh
-    ```
-
-## Build Features
-
-- `eng` - Build with English strings.
-- `pt` - Build with Portugeuse strings.
-- `zhn` - Build with Chinese(Simplified) strings.
-- `no-audio` - Build without the support of audio playback.
 
 ## Composition Parameters `YAML` file
 

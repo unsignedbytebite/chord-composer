@@ -57,7 +57,7 @@ pub fn export_composition_to_midi(composition_path: &str) -> Result<SuccessResul
 
 /// Play composition patterns.
 ///
-/// # Argument
+/// # Arguments
 /// * `composition_path` - The file path to the composition yaml file.
 /// * `performance_state` - The composition playback performance state.
 /// * `is_metronome_enabled` - If `true` a metronome will be played on playback.
