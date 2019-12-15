@@ -1,11 +1,10 @@
 [package]
 name = "chord-composer"
-version = "0.2.6"
+version = "0.2.7"
 authors = ["cj <unsignedbytebite@gmail.com>"]
 edition = "2018"
 license = "MIT"
 readme = "README.md"
-documentation = ""
 repository = "https://github.com/unsignedbytebite/chord-composer"
 description = """
 A music composition tool for structuring chord progressions and patterns.
