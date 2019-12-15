@@ -18,7 +18,7 @@ default=["with-sound"]
 with-sound = ["rodio"]
 
 [dependencies]
-rodio = {version ="*", optional = true} 
+rodio = {version ="0.10.0", optional = true} 
 stopwatch = "0.0.7"
 serde = "1.0.103"
 serde_yaml = "0.8.11"
