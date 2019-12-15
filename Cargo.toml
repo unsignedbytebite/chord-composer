@@ -19,10 +19,10 @@ with-sound = ["rodio"]
 
 [dependencies]
 rodio = {version ="*", optional = true} 
-stopwatch = "*"
-serde = "*"
-serde_yaml = "*"
-serde_derive = "*"
-ghakuf = "*"
-rand = "*"
-music-timer = "*"
+stopwatch = "0.0.7"
+serde = "1.0.103"
+serde_yaml = "0.8.11"
+serde_derive = "1.0.103"
+ghakuf = "0.5.3"
+rand = "0.4.6"
+music-timer = "0.1.5"
