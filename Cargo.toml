@@ -5,9 +5,6 @@ authors = ["cj <unsignedbytebite@gmail.com>"]
 edition = "2018"
 
 [features]
-eng = []
-pt = []
-zhn = []
 no-audio = []
 
 [dependencies]
@@ -16,7 +13,6 @@ stopwatch = "*"
 serde = "*"
 serde_yaml = "*"
 serde_derive = "*"
-clap = "*"
 ghakuf = "*"
 rand = "*"
 music-timer = "*"
