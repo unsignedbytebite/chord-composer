@@ -101,11 +101,16 @@ fn test_performance_engine() {
     current_time: music_time::MusicTime::default(),
   };
 
-  let mut performance_engine =
-    performance_engine::PerformanceEngine::new(&composition, &mut my_state).unwrap();
-  performance_engine.set_metronome_enabled(true);
-  performance_engine.run();
+  let performance_engine =
+    performance_engine::PerformanceEngine::new(&composition, &mut my_state);
 
+  match performance_engine {
+    Ok(mut performance) => {
+      performance.set_metronome_enabled(true);
+      performance.run();
+    }
+    _ => assert!(false, "Cannot create performance engine"),
+  }
   assert_eq!(my_state.callback_calls, 216);
   assert_eq!(my_state.current_time, music_time::MusicTime::new(3, 3, 8));
 }

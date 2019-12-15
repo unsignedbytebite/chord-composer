@@ -5,10 +5,10 @@ authors = ["cj <unsignedbytebite@gmail.com>"]
 edition = "2018"
 
 [features]
-no-audio = []
+with-sound = ["rodio"]
 
 [dependencies]
-rodio = "*"
+rodio = {version ="*", optional = true} 
 stopwatch = "*"
 serde = "*"
 serde_yaml = "*"

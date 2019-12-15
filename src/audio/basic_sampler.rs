@@ -1,3 +1,5 @@
+#![cfg(feature = "with-sound")]
+
 use rodio::Source; //TODO: replace rodio with something better
 use std::{fs, io};
 
@@ -49,7 +51,7 @@ impl SamplerPlayer {
   }
 
   pub fn play(&self, sample_index: usize) {
-    if cfg!(feature = "no-audio") || sample_index >= self.clip_buffers.len() {
+    if sample_index >= self.clip_buffers.len() {
       return;
     }
 

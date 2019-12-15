@@ -1,4 +1,7 @@
-use crate::{audio::basic_sampler, theory::composition, FailResult};
+#[cfg(feature = "with-sound")]
+use crate::audio::basic_sampler;
+
+use crate::{theory::composition, FailResult};
 use music_timer::{music_time, music_timer_engine};
 use std::{thread, time::Duration};
 
@@ -14,7 +17,9 @@ pub trait PerformanceState {
 }
 
 pub struct PerformanceEngine<'a, State: PerformanceState> {
+  #[cfg(feature = "with-sound")]
   sampler_metronome: basic_sampler::SamplerPlayer,
+  #[cfg(feature = "with-sound")]
   sampler_piano: basic_sampler::SamplerPlayer,
   event_head: usize,
   current_pattern: &'a composition::Pattern,
@@ -34,11 +39,13 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
       panic!("PerformanceEngine cannot be created with no patterns in the composition!");
     }
 
+    #[cfg(feature = "with-sound")]
     let sampler_metronome = basic_sampler::SamplerPlayer::new(&vec![
       "./audio_assets/metronome/tock.ogg".to_string(),
       "./audio_assets/metronome/tick.ogg".to_string(),
     ]);
 
+    #[cfg(feature = "with-sound")]
     let sampler_piano = {
       let mut sample_paths = Vec::new();
       for i in 1..61 {
@@ -49,11 +56,19 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
       basic_sampler::SamplerPlayer::new(&sample_paths)
     };
 
-    if sampler_metronome.is_err() || sampler_piano.is_err() {
+    #[cfg(feature = "with-sound")]
+    let error_loading = sampler_metronome.is_err() || sampler_piano.is_err();
+
+    #[cfg(not(feature = "with-sound"))]
+    let error_loading = false;
+
+    if error_loading {
       Err(FailResult::LoadSampler)
     } else {
       Ok(PerformanceEngine {
+        #[cfg(feature = "with-sound")]
         sampler_metronome: sampler_metronome.unwrap(),
+        #[cfg(feature = "with-sound")]
         sampler_piano: sampler_piano.unwrap(),
         event_head: 0,
         current_pattern: &composition.get(0),
@@ -110,17 +125,25 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     self.state.on_beat_interval_change(current_time);
     if !events_complete {
       let current_event = self.current_pattern.get(self.event_head);
+
+      #[cfg(feature = "with-sound")]
       let (event_time, event_notes) = current_event;
+
+      #[cfg(not(feature = "with-sound"))]
+      let (event_time, _event_notes) = current_event;
 
       let is_event_trigger_time = current_time == event_time;
       if is_event_trigger_time {
         self.state.on_event(&current_event);
         self.event_head += 1;
+
+        #[cfg(feature = "with-sound")]
         for note in event_notes {
           let sample_index = {
             const MIDI_OFFSET: usize = 24;
             *note as usize - MIDI_OFFSET
           };
+
           self.sampler_piano.play(sample_index);
         }
       }
@@ -133,6 +156,7 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     }
     self.state.on_beat_change(current_time);
     if self.is_metronome_enabled && current_time.get_beat() != 1 {
+      #[cfg(feature = "with-sound")]
       self.sampler_metronome.play(0);
     }
   }
@@ -144,6 +168,7 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     self.state.on_bar_change(current_time);
 
     if self.is_metronome_enabled {
+      #[cfg(feature = "with-sound")]
       self.sampler_metronome.play(1);
     }
   }
