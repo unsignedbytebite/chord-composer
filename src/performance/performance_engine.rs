@@ -33,6 +33,10 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
   pub fn new(
     composition: &'a composition::Composition,
     state: &'a mut State,
+    #[cfg(feature = "with-sound")]
+    sample_paths_metronome: &Vec<String>,
+    #[cfg(feature = "with-sound")]
+    sample_paths_piano: &Vec<String>,
   ) -> Result<Self, FailResult> {
     if composition.len() == 0 {
       // This should never panic IRL, the parsing should have picked up this error beforehand.
@@ -40,10 +44,7 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
     }
 
     #[cfg(feature = "with-sound")]
-    let sampler_metronome = basic_sampler::SamplerPlayer::new(&vec![
-      "./audio_assets/metronome/tock.ogg".to_string(),
-      "./audio_assets/metronome/tick.ogg".to_string(),
-    ]);
+    let sampler_metronome = basic_sampler::SamplerPlayer::new(sample_paths_metronome);
 
     #[cfg(feature = "with-sound")]
     let sampler_piano = {

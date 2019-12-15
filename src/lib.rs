@@ -65,12 +65,22 @@ pub fn play<State: performance_engine::PerformanceState>(
   composition_path: &str,
   performance_state: &mut State,
   is_metronome_enabled: bool,
+  #[cfg(feature = "with-sound")]
+  sample_paths_metronome: &Vec<String>,
+  #[cfg(feature = "with-sound")]
+  sample_paths_piano: &Vec<String>,
 ) -> Result<SuccessResult, FailResult> {
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
   let composition = parameters_to_composition(&composition_parameters)?;
 
-  let mut performance_engine =
-    performance_engine::PerformanceEngine::new(&composition, performance_state)?;
+  let mut performance_engine = performance_engine::PerformanceEngine::new(
+    &composition,
+    performance_state,
+    #[cfg(feature = "with-sound")]
+    sample_paths_metronome,
+    #[cfg(feature = "with-sound")]
+    sample_paths_piano,
+  )?;
 
   performance_engine.set_metronome_enabled(is_metronome_enabled);
   performance_engine.run();
