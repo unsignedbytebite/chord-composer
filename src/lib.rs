@@ -61,13 +61,12 @@ pub fn export_composition_to_midi(composition_path: &str) -> Result<SuccessResul
 /// * `composition_path` - The file path to the composition yaml file.
 /// * `performance_state` - The composition playback performance state.
 /// * `is_metronome_enabled` - If `true` a metronome will be played on playback.
+#[cfg(feature = "with-sound")]
 pub fn play<State: performance_engine::PerformanceState>(
   composition_path: &str,
   performance_state: &mut State,
   is_metronome_enabled: bool,
-  #[cfg(feature = "with-sound")]
   sample_paths_metronome: &Vec<String>,
-  #[cfg(feature = "with-sound")]
   sample_paths_piano: &Vec<String>,
 ) -> Result<SuccessResult, FailResult> {
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
@@ -76,10 +75,34 @@ pub fn play<State: performance_engine::PerformanceState>(
   let mut performance_engine = performance_engine::PerformanceEngine::new(
     &composition,
     performance_state,
-    #[cfg(feature = "with-sound")]
     sample_paths_metronome,
-    #[cfg(feature = "with-sound")]
     sample_paths_piano,
+  )?;
+
+  performance_engine.set_metronome_enabled(is_metronome_enabled);
+  performance_engine.run();
+
+  Ok(SuccessResult::Playback)
+}
+
+/// Play composition patterns without audio playback.
+///
+/// # Arguments
+/// * `composition_path` - The file path to the composition yaml file.
+/// * `performance_state` - The composition playback performance state.
+/// * `is_metronome_enabled` - If `true` a metronome will be played on playback.
+#[cfg(not(feature = "with-sound"))]
+pub fn play<State: performance_engine::PerformanceState>(
+  composition_path: &str,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+) -> Result<SuccessResult, FailResult> {
+  let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
+  let composition = parameters_to_composition(&composition_parameters)?;
+
+  let mut performance_engine = performance_engine::PerformanceEngine::new(
+    &composition,
+    performance_state,
   )?;
 
   performance_engine.set_metronome_enabled(is_metronome_enabled);

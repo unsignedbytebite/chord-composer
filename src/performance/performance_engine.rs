@@ -16,10 +16,9 @@ pub trait PerformanceState {
   fn on_completed(&mut self, composition: &composition::Composition);
 }
 
+#[cfg(feature = "with-sound")]
 pub struct PerformanceEngine<'a, State: PerformanceState> {
-  #[cfg(feature = "with-sound")]
   sampler_metronome: basic_sampler::SamplerPlayer,
-  #[cfg(feature = "with-sound")]
   sampler_piano: basic_sampler::SamplerPlayer,
   event_head: usize,
   current_pattern: &'a composition::Pattern,
@@ -29,40 +28,38 @@ pub struct PerformanceEngine<'a, State: PerformanceState> {
   is_metronome_enabled: bool,
 }
 
+#[cfg(not(feature = "with-sound"))]
+pub struct PerformanceEngine<'a, State: PerformanceState> {
+  event_head: usize,
+  current_pattern: &'a composition::Pattern,
+  is_playing: bool,
+  composition: &'a composition::Composition,
+  state: &'a mut State,
+  is_metronome_enabled: bool,
+}
+
 impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
+  #[cfg(feature = "with-sound")]
   pub fn new(
     composition: &'a composition::Composition,
     state: &'a mut State,
-    #[cfg(feature = "with-sound")]
     sample_paths_metronome: &Vec<String>,
-    #[cfg(feature = "with-sound")]
     sample_paths_piano: &Vec<String>,
-
   ) -> Result<Self, FailResult> {
     if composition.len() == 0 {
       // This should never panic IRL, the parsing should have picked up this error beforehand.
       panic!("PerformanceEngine cannot be created with no patterns in the composition!");
     }
 
-    #[cfg(feature = "with-sound")]
     let sampler_metronome = basic_sampler::SamplerPlayer::new(sample_paths_metronome);
-
-    #[cfg(feature = "with-sound")]
     let sampler_piano = basic_sampler::SamplerPlayer::new(&sample_paths_piano);
 
-    #[cfg(feature = "with-sound")]
     let error_loading = sampler_metronome.is_err() || sampler_piano.is_err();
-
-    #[cfg(not(feature = "with-sound"))]
-    let error_loading = false;
-
     if error_loading {
       Err(FailResult::LoadSampler)
     } else {
       Ok(PerformanceEngine {
-        #[cfg(feature = "with-sound")]
         sampler_metronome: sampler_metronome.unwrap(),
-        #[cfg(feature = "with-sound")]
         sampler_piano: sampler_piano.unwrap(),
         event_head: 0,
         current_pattern: &composition.get(0),
@@ -72,6 +69,26 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
         is_metronome_enabled: false,
       })
     }
+  }
+
+  #[cfg(not(feature = "with-sound"))]
+  pub fn new(
+    composition: &'a composition::Composition,
+    state: &'a mut State,
+  ) -> Result<Self, FailResult> {
+    if composition.len() == 0 {
+      // This should never panic IRL, the parsing should have picked up this error beforehand.
+      panic!("PerformanceEngine cannot be created with no patterns in the composition!");
+    }
+
+    Ok(PerformanceEngine {
+      event_head: 0,
+      current_pattern: &composition.get(0),
+      is_playing: false,
+      composition,
+      state,
+      is_metronome_enabled: false,
+    })
   }
 
   pub fn run(&mut self) {
