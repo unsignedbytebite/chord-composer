@@ -90,7 +90,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "chord-composer"
-version = "0.2.7"
+version = "0.2.9"
 dependencies = [
  "ghakuf 0.5.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "music-timer 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",

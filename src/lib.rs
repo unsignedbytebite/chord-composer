@@ -100,9 +100,30 @@ pub fn play<State: performance_engine::PerformanceState>(
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
   let composition = parameters_to_composition(&composition_parameters)?;
 
+  let mut performance_engine =
+    performance_engine::PerformanceEngine::new(&composition, performance_state)?;
+
+  performance_engine.set_metronome_enabled(is_metronome_enabled);
+  performance_engine.run();
+
+  Ok(SuccessResult::Playback)
+}
+
+pub fn play_from<State: performance_engine::PerformanceState>(
+  composition_path: &str,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+  sample_paths_metronome: &Vec<String>,
+  sample_paths_piano: &Vec<String>,
+) -> Result<SuccessResult, FailResult> {
+  let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
+  let composition = parameters_to_composition(&composition_parameters)?;
+
   let mut performance_engine = performance_engine::PerformanceEngine::new(
     &composition,
     performance_state,
+    sample_paths_metronome,
+    sample_paths_piano,
   )?;
 
   performance_engine.set_metronome_enabled(is_metronome_enabled);
