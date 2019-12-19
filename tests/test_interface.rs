@@ -176,5 +176,14 @@ fn test_play_file() {
   assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
 }
 
-
 //TODO: test to interface engine without parsing data
+
+#[test]
+fn export_midi_api() {
+  asset!(false, "TODO");
+}
+
+#[test]
+fn play_composition_api() {
+  asset!(false, "TODO");
+}

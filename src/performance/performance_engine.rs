@@ -120,7 +120,7 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
       // Set the current time for playback and
       // advance events to that time
       music_timer.set_current_time();
-      self.event_head = find_next_event(pattern, start_time);
+      self.event_head = PerformanceEngine::find_next_event(pattern, start_time);
 
       // Assign current pattern
       self.current_pattern = pattern;
