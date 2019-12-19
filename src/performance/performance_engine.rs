@@ -91,21 +91,41 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
     })
   }
 
-  pub fn run(&mut self) {
+  pub fn find_next_event(pattern: &composition::Pattern, time: &music_time::MusicTime) -> usize {
+    let mut event_head = 0;
+    for event in pattern.get_events() {
+      let (event_time, _intervals) = event;
+      if event_time >= time {
+        break;
+      }
+      event_head += 1;
+    }
+
+    event_head
+  }
+
+  pub fn run(&mut self, start_time: &music_time::MusicTime) {
     self.state.on_ready(self.composition);
     for pattern in self.composition.get_patterns() {
       self.state.on_pattern_playback_begin(pattern);
       self.is_playing = true;
-      self.event_head = 0;
 
+      // Create new music timer
       let mut music_timer = music_timer::create_performance_engine(
         pattern.get_time_signature().get_numerator(),
         pattern.get_time_signature().get_denominator(),
         pattern.get_bpm() as f32,
       );
 
+      // Set the current time for playback and
+      // advance events to that time
+      music_timer.set_current_time();
+      self.event_head = find_next_event(pattern, start_time);
+
+      // Assign current pattern
       self.current_pattern = pattern;
 
+      // Loop while playback enabled
       while self.is_playing {
         music_timer.pulse(self);
         const PULSE_RESOLUTION: Duration = Duration::from_millis(16);
@@ -183,4 +203,9 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
       self.sampler_metronome.play(1);
     }
   }
+}
+
+#[test]
+fn test_find_next_event() {
+  let perform = PerformanceEngine::new();
 }

@@ -115,6 +115,8 @@ pub fn play_from<State: performance_engine::PerformanceState>(
   is_metronome_enabled: bool,
   sample_paths_metronome: &Vec<String>,
   sample_paths_piano: &Vec<String>,
+  playback_start: &music_timer::music_time::MusicTime,
+  pattern_start: &str,
 ) -> Result<SuccessResult, FailResult> {
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
   let composition = parameters_to_composition(&composition_parameters)?;
@@ -127,7 +129,7 @@ pub fn play_from<State: performance_engine::PerformanceState>(
   )?;
 
   performance_engine.set_metronome_enabled(is_metronome_enabled);
-  performance_engine.run();
+  performance_engine.run(playback_start);
 
   Ok(SuccessResult::Playback)
 }

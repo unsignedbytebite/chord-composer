@@ -175,3 +175,6 @@ fn test_play_file() {
   assert_eq!(my_state.callback_calls, 34);
   assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
 }
+
+
+//TODO: test to interface engine without parsing data
