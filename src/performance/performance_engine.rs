@@ -91,7 +91,7 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
     })
   }
 
-  pub fn find_next_event(pattern: &composition::Pattern, time: &music_time::MusicTime) -> usize {
+  pub fn find_next_event(&self, pattern: &composition::Pattern, time: &music_time::MusicTime) -> usize {
     let mut event_head = 0;
     for event in pattern.get_events() {
       let (event_time, _intervals) = event;
@@ -104,7 +104,11 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
     event_head
   }
 
-  pub fn run(&mut self, start_time: &music_time::MusicTime) {
+  pub fn run(&mut self) {
+    self.run_from(&music_time::MusicTime::default());
+  }
+
+  pub fn run_from(&mut self, start_time: &music_time::MusicTime) {
     self.state.on_ready(self.composition);
     for pattern in self.composition.get_patterns() {
       self.state.on_pattern_playback_begin(pattern);
@@ -119,8 +123,8 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
 
       // Set the current time for playback and
       // advance events to that time
-      music_timer.set_current_time();
-      self.event_head = PerformanceEngine::find_next_event(pattern, start_time);
+      music_timer.set_current_time(*start_time);
+      self.event_head = self.find_next_event(pattern, start_time);
 
       // Assign current pattern
       self.current_pattern = pattern;
@@ -208,4 +212,6 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
 #[test]
 fn test_find_next_event() {
   let perform = PerformanceEngine::new();
+
+  assert!(false, "TODO");
 }

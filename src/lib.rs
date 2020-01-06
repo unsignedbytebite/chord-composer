@@ -129,7 +129,7 @@ pub fn play_from<State: performance_engine::PerformanceState>(
   )?;
 
   performance_engine.set_metronome_enabled(is_metronome_enabled);
-  performance_engine.run(playback_start);
+  performance_engine.run();
 
   Ok(SuccessResult::Playback)
 }

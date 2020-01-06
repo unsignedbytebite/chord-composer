@@ -180,10 +180,10 @@ fn test_play_file() {
 
 #[test]
 fn export_midi_api() {
-  asset!(false, "TODO");
+  assert!(false, "TODO");
 }
 
 #[test]
 fn play_composition_api() {
-  asset!(false, "TODO");
+  assert!(false, "TODO");
 }

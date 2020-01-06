@@ -25,4 +25,4 @@ serde_yaml = "0.8.11"
 serde_derive = "1.0.103"
 ghakuf = "0.5.3"
 rand = "0.4.6"
-music-timer = "0.1.5"
+music-timer = {path="../music-timer"}
