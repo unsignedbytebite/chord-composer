@@ -118,6 +118,6 @@ fn test_performance_engine() {
     }
     _ => assert!(false, "Cannot create performance engine"),
   }
-  assert_eq!(my_state.callback_calls, 216);
+  assert_eq!(my_state.callback_calls, 214);
   assert_eq!(my_state.current_time, music_time::MusicTime::new(3, 3, 8));
 }
