@@ -1,5 +1,3 @@
-#![cfg(feature = "with-sound")]
-
 use rodio::Source; //TODO: replace rodio with something better
 use std::{fs, io};
 

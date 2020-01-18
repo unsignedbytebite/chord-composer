@@ -1,6 +1,4 @@
-#[cfg(feature = "with-sound")]
 use crate::audio::basic_sampler;
-
 use crate::{theory::composition, FailResult};
 use music_timer::{music_time, music_timer_engine};
 use std::{thread, time::Duration};
@@ -16,7 +14,6 @@ pub trait PerformanceState {
   fn on_completed(&mut self, composition: &composition::Composition);
 }
 
-#[cfg(feature = "with-sound")]
 pub struct PerformanceEngine<'a, State: PerformanceState> {
   sampler_metronome: basic_sampler::SamplerPlayer,
   sampler_piano: basic_sampler::SamplerPlayer,
@@ -28,18 +25,7 @@ pub struct PerformanceEngine<'a, State: PerformanceState> {
   is_metronome_enabled: bool,
 }
 
-#[cfg(not(feature = "with-sound"))]
-pub struct PerformanceEngine<'a, State: PerformanceState> {
-  event_head: usize,
-  current_pattern: &'a composition::Pattern,
-  is_playing: bool,
-  composition: &'a composition::Composition,
-  state: &'a mut State,
-  is_metronome_enabled: bool,
-}
-
 impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
-  #[cfg(feature = "with-sound")]
   pub fn new(
     composition: &'a composition::Composition,
     state: &'a mut State,
@@ -70,28 +56,7 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
       })
     }
   }
-
-  #[cfg(not(feature = "with-sound"))]
-  pub fn new(
-    composition: &'a composition::Composition,
-    state: &'a mut State,
-  ) -> Result<Self, FailResult> {
-    if composition.len() == 0 {
-      // This should never panic IRL, the parsing should have picked up this error beforehand.
-      panic!("PerformanceEngine cannot be created with no patterns in the composition!");
-    }
-
-    Ok(PerformanceEngine {
-      event_head: 0,
-      current_pattern: &composition.get(0),
-      is_playing: false,
-      composition,
-      state,
-      is_metronome_enabled: false,
-    })
-  }
-
-  pub fn find_next_event(&self, pattern: &composition::Pattern, time: &music_time::MusicTime) -> usize {
+ pub fn find_next_event(&self, pattern: &composition::Pattern, time: &music_time::MusicTime) -> usize {
     let mut event_head = 0;
     for event in pattern.get_events() {
       let (event_time, _intervals) = event;
@@ -161,18 +126,13 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     if !events_complete {
       let current_event = self.current_pattern.get(self.event_head);
 
-      #[cfg(feature = "with-sound")]
       let (event_time, event_notes) = current_event;
-
-      #[cfg(not(feature = "with-sound"))]
-      let (event_time, _event_notes) = current_event;
 
       let is_event_trigger_time = current_time == event_time;
       if is_event_trigger_time {
         self.state.on_event(&current_event);
         self.event_head += 1;
 
-        #[cfg(feature = "with-sound")]
         for note in event_notes {
           let sample_index = {
             const MIDI_OFFSET: usize = 24;
@@ -191,7 +151,6 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     }
     self.state.on_beat_change(current_time);
     if self.is_metronome_enabled && current_time.get_beat() != 1 {
-      #[cfg(feature = "with-sound")]
       self.sampler_metronome.play(0);
     }
   }
@@ -203,7 +162,6 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     self.state.on_bar_change(current_time);
 
     if self.is_metronome_enabled {
-      #[cfg(feature = "with-sound")]
       self.sampler_metronome.play(1);
     }
   }
@@ -211,7 +169,7 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
 
 #[test]
 fn test_find_next_event() {
-  let perform = PerformanceEngine::new();
+  // let perform = PerformanceEngine::new();
 
   assert!(false, "TODO");
 }

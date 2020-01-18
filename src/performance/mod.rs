@@ -18,12 +18,15 @@ fn test_performance_engine() {
     fn on_beat_interval_change(&mut self, current_time: &music_time::MusicTime) {
       self.callback_calls += 1;
       self.current_time = current_time.clone();
+      println!("on_beat_interval_change: {:?}", current_time);
     }
-    fn on_beat_change(&mut self, _current_time: &music_time::MusicTime) {
+    fn on_beat_change(&mut self, current_time: &music_time::MusicTime) {
       self.callback_calls += 1;
+      println!("on_beat_change: {:?}", current_time);
     }
-    fn on_bar_change(&mut self, _current_time: &music_time::MusicTime) {
+    fn on_bar_change(&mut self, current_time: &music_time::MusicTime) {
       self.callback_calls += 1;
+      println!("on_bar_change: {:?}", current_time);
     }
     fn on_event(&mut self, event: &composition::PatternEvent) {
       self.callback_calls += 1;
@@ -34,11 +37,11 @@ fn test_performance_engine() {
         let test_notes: Vec<u8> = Vec::new();
         assert_eq!(*notes, test_notes);
       }
+      println!("event: {:?}", event);
     }
     fn on_pattern_playback_begin(&mut self, pattern: &composition::Pattern) {
       self.callback_calls += 1;
 
-      println!(">{}", self.callback_calls);
       if self.callback_calls < 80 {
         assert_eq!(pattern.get_name(), "pattern_z");
         assert_eq!(
@@ -101,8 +104,12 @@ fn test_performance_engine() {
     current_time: music_time::MusicTime::default(),
   };
 
-  let performance_engine =
-    performance_engine::PerformanceEngine::new(&composition, &mut my_state);
+  let performance_engine = performance_engine::PerformanceEngine::new(
+    &composition,
+    &mut my_state,
+    &Vec::new(),
+    &Vec::new(),
+  );
 
   match performance_engine {
     Ok(mut performance) => {

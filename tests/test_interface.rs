@@ -168,7 +168,7 @@ fn test_play_file() {
   };
 
   assert_eq!(
-    chord_composer::play(file, &mut my_state, true),
+    chord_composer::play(file, &mut my_state, true, &Vec::new(), &Vec::new()),
     Ok(chord_composer::SuccessResult::Playback)
   );
 
