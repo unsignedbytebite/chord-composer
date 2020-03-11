@@ -84,7 +84,6 @@ pub fn play<State: performance_engine::PerformanceState>(
   Ok(SuccessResult::Playback)
 }
 
-
 //TODO: seperate out and clean play logics
 pub fn play_from<State: performance_engine::PerformanceState>(
   composition_path: &str,

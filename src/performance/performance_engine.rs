@@ -56,7 +56,11 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
       })
     }
   }
- pub fn find_next_event(&self, pattern: &composition::Pattern, time: &music_time::MusicTime) -> usize {
+  pub fn find_next_event(
+    &self,
+    pattern: &composition::Pattern,
+    time: &music_time::MusicTime,
+  ) -> usize {
     let mut event_head = 0;
     for event in pattern.get_events() {
       let (event_time, _intervals) = event;
@@ -167,9 +171,11 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
   }
 }
 
-#[test]
-fn test_find_next_event() {
-  // let perform = PerformanceEngine::new();
+mod tests {
+  #[test]
+  fn test_find_next_event() {
+    // let perform = PerformanceEngine::new();
 
-  assert!(false, "TODO");
+    assert!(false, "TODO");
+  }
 }

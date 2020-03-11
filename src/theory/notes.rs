@@ -109,26 +109,30 @@ pub fn midi_to_note(value: u8) -> (u8, Key) {
   (octave + 1, index_to_key(note as i8))
 }
 
-#[test]
-fn test_midi_note() {
-  let note = to_midi_note(0);
-  assert_eq!(note, 24);
-  assert_eq!(midi_to_note(note), (1, Key::C));
+mod tests {
+  #[test]
+  fn test_midi_note() {
+    use crate::theory::notes::*;
+    let note = to_midi_note(0);
+    assert_eq!(note, 24);
+    assert_eq!(midi_to_note(note), (1, Key::C));
 
-  assert_eq!(midi_to_note(60), (4, Key::C));
-  assert_eq!(midi_to_note(60 - 12 + 3), (3, Key::Ds));
-}
-#[test]
-fn test_conversions() {
-  let result = key_to_index(Key::G);
-  assert_eq!(result, 7);
+    assert_eq!(midi_to_note(60), (4, Key::C));
+    assert_eq!(midi_to_note(60 - 12 + 3), (3, Key::Ds));
+  }
+  #[test]
+  fn test_conversions() {
+    use crate::theory::notes::*;
+    let result = key_to_index(Key::G);
+    assert_eq!(result, 7);
 
-  let result = key_to_string(Key::As);
-  assert_eq!(result, "A#");
+    let result = key_to_string(Key::As);
+    assert_eq!(result, "A#");
 
-  let result = string_to_key("B");
-  assert_eq!(result, Key::B);
+    let result = string_to_key("B");
+    assert_eq!(result, Key::B);
 
-  let result = index_to_key(2);
-  assert_eq!(result, Key::D);
+    let result = index_to_key(2);
+    assert_eq!(result, Key::D);
+  }
 }

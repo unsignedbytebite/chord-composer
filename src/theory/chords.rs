@@ -412,57 +412,62 @@ impl IntervalChord {
   }
 }
 
-#[test]
-fn test_interval_chord() {
-  let mut chord = IntervalChord::from_string("POWER");
-  assert_eq!(chord.intervals, vec![0, 7]);
-  chord.transpose(-1);
-  chord.transpose_octave(1);
-  assert_eq!(chord.transpose, 11);
+mod tests {
+  #[test]
+  fn test_interval_chord() {
+    use crate::theory::chords::*;
+    let mut chord = IntervalChord::from_string("POWER");
+    assert_eq!(chord.intervals, vec![0, 7]);
+    chord.transpose(-1);
+    chord.transpose_octave(1);
+    assert_eq!(chord.transpose, 11);
 
-  let chord = IntervalChord::from_string("  MINOR    ");
-  assert_eq!(chord.intervals, vec![0, 3, 7]);
+    let chord = IntervalChord::from_string("  MINOR    ");
+    assert_eq!(chord.intervals, vec![0, 3, 7]);
 
-  let chord = IntervalChord::from_string(" POsdsdWER >");
-  assert_eq!(chord.intervals.len(), 0);
+    let chord = IntervalChord::from_string(" POsdsdWER >");
+    assert_eq!(chord.intervals.len(), 0);
 
-  let chord = IntervalChord::from_string(" MINOR  -5 ");
-  assert_eq!(chord.intervals.len(), 0);
-  assert_eq!(chord.transpose, 0);
-}
+    let chord = IntervalChord::from_string(" MINOR  -5 ");
+    assert_eq!(chord.intervals.len(), 0);
+    assert_eq!(chord.transpose, 0);
+  }
 
-#[test]
-fn test_interval_random() {
-  let custom_chords = vec![("customA".to_string(), vec![0, 1, 2])];
+  #[test]
+  fn test_interval_random() {
+    use crate::theory::chords::*;
+    let custom_chords = vec![("customA".to_string(), vec![0, 1, 2])];
 
-  let chord = IntervalChord::from_string_with_custom("?", &custom_chords);
-  assert_eq!(chord.intervals, vec![0, 1, 2]);
+    let chord = IntervalChord::from_string_with_custom("?", &custom_chords);
+    assert_eq!(chord.intervals, vec![0, 1, 2]);
 
-  let custom_chords = vec![
-    ("customA".to_string(), vec![0, 1, 2, 5, 6]),
-    ("customB".to_string(), vec![3, 4, 5, 8, 9]),
-  ];
+    let custom_chords = vec![
+      ("customA".to_string(), vec![0, 1, 2, 5, 6]),
+      ("customB".to_string(), vec![3, 4, 5, 8, 9]),
+    ];
 
-  let chord = IntervalChord::from_string_with_custom("?", &custom_chords);
-  assert_eq!(chord.intervals.len(), 5);
+    let chord = IntervalChord::from_string_with_custom("?", &custom_chords);
+    assert_eq!(chord.intervals.len(), 5);
 
-  let chord = IntervalChord::from_string_with_custom("??", &custom_chords);
-  assert_ne!(chord.intervals.len(), 0);
-}
+    let chord = IntervalChord::from_string_with_custom("??", &custom_chords);
+    assert_ne!(chord.intervals.len(), 0);
+  }
 
-#[test]
-fn test_interval_chord_custom() {
-  let custom_chords = vec![
-    ("customA".to_string(), vec![0, 1, 2]),
-    ("customB".to_string(), vec![3, 4, 5]),
-  ];
+  #[test]
+  fn test_interval_chord_custom() {
+    use crate::theory::chords::*;
+    let custom_chords = vec![
+      ("customA".to_string(), vec![0, 1, 2]),
+      ("customB".to_string(), vec![3, 4, 5]),
+    ];
 
-  let chord = IntervalChord::from_string_with_custom("POWER", &custom_chords);
-  assert_eq!(chord.intervals, vec![0, 7]);
+    let chord = IntervalChord::from_string_with_custom("POWER", &custom_chords);
+    assert_eq!(chord.intervals, vec![0, 7]);
 
-  let chord = IntervalChord::from_string_with_custom("  customA", &custom_chords);
-  assert_eq!(chord.intervals, vec![0, 1, 2]);
+    let chord = IntervalChord::from_string_with_custom("  customA", &custom_chords);
+    assert_eq!(chord.intervals, vec![0, 1, 2]);
 
-  let chord = IntervalChord::from_string_with_custom("customB ", &custom_chords);
-  assert_eq!(chord.intervals, vec![3, 4, 5]);
+    let chord = IntervalChord::from_string_with_custom("customB ", &custom_chords);
+    assert_eq!(chord.intervals, vec![3, 4, 5]);
+  }
 }

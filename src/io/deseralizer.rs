@@ -166,10 +166,14 @@ impl PatternParameters {
   }
 }
 
-#[test]
-fn test_yaml_import() {
-  let params = deserialize_string(
-    r#"
+mod tests {
+
+  #[test]
+  fn test_yaml_import() {
+    use crate::io::deseralizer::*;
+
+    let params = deserialize_string(
+      r#"
         name: bc_000_a
 
         # Can be overridden by patterns
@@ -213,129 +217,138 @@ fn test_yaml_import() {
                   - [3,2,1, custom1, 0]
 
             "#,
-  )
-  .unwrap();
+    )
+    .unwrap();
 
-  assert_eq!(params.get_name(), "bc_000_a");
+    assert_eq!(params.get_name(), "bc_000_a");
 
-  match params.get_master() {
-    Some(master) => {
-      assert_eq!(master.get_key_or_default(), "D");
-      assert_eq!(master.get_time_or_default(), 128);
-      assert_eq!(master.get_signature_or_default(), (3, 4));
-    }
-    None => assert!(false),
-  };
-
-  match params.get_custom_chords() {
-    Some(chords) => {
-      assert_eq!(chords, &[("custom1".to_string(), vec![0, 3, 8])]);
-    }
-    None => assert!(false),
-  };
-
-  match params.get_patterns() {
-    Some(patterns) => {
-      let pattern = &patterns[0];
-      assert_eq!(pattern.get_name(), &Some("part_a".to_string()));
-      assert_eq!(pattern.get_master(), &None);
-      match pattern.get_pattern() {
-        Some(events) => assert_eq!(&events.len(), &8usize),
-        None => assert!(false),
+    match params.get_master() {
+      Some(master) => {
+        assert_eq!(master.get_key_or_default(), "D");
+        assert_eq!(master.get_time_or_default(), 128);
+        assert_eq!(master.get_signature_or_default(), (3, 4));
       }
+      None => assert!(false),
+    };
 
-      let pattern = &patterns[1];
-      assert_eq!(pattern.get_name(), &Some("part_b".to_string()));
+    match params.get_custom_chords() {
+      Some(chords) => {
+        assert_eq!(chords, &[("custom1".to_string(), vec![0, 3, 8])]);
+      }
+      None => assert!(false),
+    };
 
-      match pattern.get_master() {
-        Some(master) => {
-          assert_eq!(master.get_key(), Some("C#".to_string()));
-          assert_eq!(master.get_time(), Some(69));
-          assert_eq!(master.get_signature(), Some((4, 8)));
+    match params.get_patterns() {
+      Some(patterns) => {
+        let pattern = &patterns[0];
+        assert_eq!(pattern.get_name(), &Some("part_a".to_string()));
+        assert_eq!(pattern.get_master(), &None);
+        match pattern.get_pattern() {
+          Some(events) => assert_eq!(&events.len(), &8usize),
+          None => assert!(false),
         }
-        None => assert!(false),
-      };
 
-      match pattern.get_pattern() {
-        Some(events) => assert_eq!(&events.len(), &8usize),
-        None => assert!(false),
+        let pattern = &patterns[1];
+        assert_eq!(pattern.get_name(), &Some("part_b".to_string()));
+
+        match pattern.get_master() {
+          Some(master) => {
+            assert_eq!(master.get_key(), Some("C#".to_string()));
+            assert_eq!(master.get_time(), Some(69));
+            assert_eq!(master.get_signature(), Some((4, 8)));
+          }
+          None => assert!(false),
+        };
+
+        match pattern.get_pattern() {
+          Some(events) => assert_eq!(&events.len(), &8usize),
+          None => assert!(false),
+        }
       }
-    }
-    None => assert!(false),
-  };
-}
+      None => assert!(false),
+    };
+  }
 
-#[test]
-fn test_yaml_import_missing() {
-  // Parse parameters
-  let params = deserialize_string(
-    r#"
+  #[test]
+  fn test_yaml_import_missing() {
+    use crate::io::deseralizer::*;
+
+    // Parse parameters
+    let params = deserialize_string(
+      r#"
         # Empty
         empty: empty 
         "#,
-  )
-  .unwrap();
+    )
+    .unwrap();
 
-  assert_eq!(params.get_name(), "Unnamed composition");
-  assert_eq!(params.get_master(), &None);
-  assert_eq!(params.get_custom_chords(), &None);
-  assert_eq!(params.get_patterns(), &None);
-}
+    assert_eq!(params.get_name(), "Unnamed composition");
+    assert_eq!(params.get_master(), &None);
+    assert_eq!(params.get_custom_chords(), &None);
+    assert_eq!(params.get_patterns(), &None);
+  }
 
-#[test]
-fn test_yaml_import_none() {
-  assert_eq!(
-    deserialize_file("not a path"),
-    Err(crate::FailResult::Deserialize)
-  );
-  assert_eq!(
-    deserialize_string("not a path"),
-    Err(crate::FailResult::Deserialize)
-  );
-}
+  #[test]
+  fn test_yaml_import_none() {
+    use crate::io::deseralizer::*;
 
-#[test]
-fn test_master_defaults() {
-  let defaults = MasterParameters::default();
+    assert_eq!(
+      deserialize_file("not a path"),
+      Err(crate::FailResult::Deserialize)
+    );
+    assert_eq!(
+      deserialize_string("not a path"),
+      Err(crate::FailResult::Deserialize)
+    );
+  }
 
-  const DEFAULT_KEY: &'static str = "C";
-  const DEFAULT_TIME: u8 = 120;
-  const DEFAULT_SIGNATURE: (u8, u8) = (4, 4);
+  #[test]
+  fn test_master_defaults() {
+    use crate::io::deseralizer::MasterParameters;
 
-  assert_eq!(defaults.get_key_or_default(), DEFAULT_KEY);
-  assert_eq!(defaults.get_time_or_default(), DEFAULT_TIME);
-  assert_eq!(defaults.get_signature_or_default(), DEFAULT_SIGNATURE);
+    let defaults = MasterParameters::default();
 
-  let (key, time, signature) = defaults.get_all_or_defaults();
-  assert_eq!(key, DEFAULT_KEY);
-  assert_eq!(time, DEFAULT_TIME);
-  assert_eq!(signature, DEFAULT_SIGNATURE);
-}
+    const DEFAULT_KEY: &'static str = "C";
+    const DEFAULT_TIME: u8 = 120;
+    const DEFAULT_SIGNATURE: (u8, u8) = (4, 4);
 
-#[test]
-fn test_master_overrides() {
-  let defaults = MasterParameters {
-    key: None,
-    time: Some(130),
-    signature: Some((4, 4)),
-  };
+    assert_eq!(defaults.get_key_or_default(), DEFAULT_KEY);
+    assert_eq!(defaults.get_time_or_default(), DEFAULT_TIME);
+    assert_eq!(defaults.get_signature_or_default(), DEFAULT_SIGNATURE);
 
-  assert_eq!(defaults.get_key_or_default(), "C");
-  assert_eq!(defaults.get_time_or_default(), 130);
-  assert_eq!(defaults.get_signature_or_default(), (4, 4));
+    let (key, time, signature) = defaults.get_all_or_defaults();
+    assert_eq!(key, DEFAULT_KEY);
+    assert_eq!(time, DEFAULT_TIME);
+    assert_eq!(signature, DEFAULT_SIGNATURE);
+  }
 
-  let overrides = MasterParameters {
-    key: Some("E".to_string()),
-    time: None,
-    signature: Some((3, 4)),
-  };
+  #[test]
+  fn test_master_overrides() {
+    use crate::io::deseralizer::MasterParameters;
 
-  assert_eq!(overrides.get_key(), Some("E".to_string()));
-  assert_eq!(overrides.get_time(), None);
-  assert_eq!(overrides.get_signature(), Some((3, 4)));
+    let defaults = MasterParameters {
+      key: None,
+      time: Some(130),
+      signature: Some((4, 4)),
+    };
 
-  let master = MasterParameters::from_overrides(&defaults, &overrides);
-  assert_eq!(master.get_key_or_default(), "E");
-  assert_eq!(master.get_time_or_default(), 130);
-  assert_eq!(master.get_signature_or_default(), (3, 4));
+    assert_eq!(defaults.get_key_or_default(), "C");
+    assert_eq!(defaults.get_time_or_default(), 130);
+    assert_eq!(defaults.get_signature_or_default(), (4, 4));
+
+    let overrides = MasterParameters {
+      key: Some("E".to_string()),
+      time: None,
+      signature: Some((3, 4)),
+    };
+
+    assert_eq!(overrides.get_key(), Some("E".to_string()));
+    assert_eq!(overrides.get_time(), None);
+    assert_eq!(overrides.get_signature(), Some((3, 4)));
+
+    let master = MasterParameters::from_overrides(&defaults, &overrides);
+    assert_eq!(master.get_key_or_default(), "E");
+    assert_eq!(master.get_time_or_default(), 130);
+    assert_eq!(master.get_signature_or_default(), (3, 4));
+  }
 }

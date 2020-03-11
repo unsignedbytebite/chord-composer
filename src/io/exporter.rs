@@ -205,81 +205,87 @@ fn to_tempo_samples(bpm: u8) -> u32 {
   (60.0 * 1000000.0 / bpm as f64) as u32
 }
 
-#[test]
-fn test_time_signature_convert() {
-  let time_signature = time_signature_to_data((4, 4));
-  assert_eq!(time_signature, [4, 2, 8, 24]);
+mod test {
 
-  let time_signature = time_signature_to_data((2, 4));
-  assert_eq!(time_signature, [2, 2, 8, 24]);
-  let time_signature = time_signature_to_data((2, 2));
-  assert_eq!(time_signature, [2, 1, 8, 24]);
+  #[test]
+  fn test_time_signature_convert() {
+    use crate::io::exporter::*;
+    let time_signature = time_signature_to_data((4, 4));
+    assert_eq!(time_signature, [4, 2, 8, 24]);
 
-  let time_signature = time_signature_to_data((2, 5));
-  assert_eq!(time_signature, [2, 0, 8, 24]);
+    let time_signature = time_signature_to_data((2, 4));
+    assert_eq!(time_signature, [2, 2, 8, 24]);
+    let time_signature = time_signature_to_data((2, 2));
+    assert_eq!(time_signature, [2, 1, 8, 24]);
 
-  let time_signature = time_signature_to_data((7, 8));
-  assert_eq!(time_signature, [7, 3, 8, 24]);
-}
+    let time_signature = time_signature_to_data((2, 5));
+    assert_eq!(time_signature, [2, 0, 8, 24]);
 
-#[test]
-fn test_correct_tick_time() {
-  const BEAT_INTERVAL_SAMPLE: u32 = 60;
-  const BEAT_SAMPLE: u32 = BEAT_INTERVAL_SAMPLE * 8;
-  assert_eq!(to_tick_time(4, 1, 1, 1), 0);
-  assert_eq!(to_tick_time(4, 1, 2, 1), BEAT_SAMPLE);
-  assert_eq!(to_tick_time(4, 1, 3, 1), BEAT_SAMPLE * 2);
-  assert_eq!(to_tick_time(4, 1, 4, 1), BEAT_SAMPLE * 3);
-  assert_eq!(to_tick_time(4, 2, 1, 1), BEAT_SAMPLE * 4);
-  assert_eq!(to_tick_time(4, 2, 2, 1), BEAT_SAMPLE * 5);
-  assert_eq!(to_tick_time(4, 2, 3, 1), BEAT_SAMPLE * 6);
-  assert_eq!(to_tick_time(4, 2, 4, 1), BEAT_SAMPLE * 7);
-  assert_eq!(to_tick_time(4, 2, 5, 1), BEAT_SAMPLE * 8);
+    let time_signature = time_signature_to_data((7, 8));
+    assert_eq!(time_signature, [7, 3, 8, 24]);
+  }
 
-  assert_eq!(to_tick_time(3, 1, 1, 1), 0);
-  assert_eq!(to_tick_time(3, 1, 2, 1), BEAT_SAMPLE);
-  assert_eq!(to_tick_time(3, 1, 3, 1), BEAT_SAMPLE * 2);
-  assert_eq!(to_tick_time(3, 2, 1, 1), BEAT_SAMPLE * 3);
-  assert_eq!(to_tick_time(3, 2, 2, 1), BEAT_SAMPLE * 4);
-  assert_eq!(to_tick_time(3, 2, 3, 1), BEAT_SAMPLE * 5);
-  assert_eq!(to_tick_time(3, 3, 1, 1), BEAT_SAMPLE * 6);
-  assert_eq!(to_tick_time(3, 3, 2, 1), BEAT_SAMPLE * 7);
-  assert_eq!(to_tick_time(3, 3, 3, 1), BEAT_SAMPLE * 8);
+  #[test]
+  fn test_correct_tick_time() {
+    use crate::io::exporter::*;
+    const BEAT_INTERVAL_SAMPLE: u32 = 60;
+    const BEAT_SAMPLE: u32 = BEAT_INTERVAL_SAMPLE * 8;
+    assert_eq!(to_tick_time(4, 1, 1, 1), 0);
+    assert_eq!(to_tick_time(4, 1, 2, 1), BEAT_SAMPLE);
+    assert_eq!(to_tick_time(4, 1, 3, 1), BEAT_SAMPLE * 2);
+    assert_eq!(to_tick_time(4, 1, 4, 1), BEAT_SAMPLE * 3);
+    assert_eq!(to_tick_time(4, 2, 1, 1), BEAT_SAMPLE * 4);
+    assert_eq!(to_tick_time(4, 2, 2, 1), BEAT_SAMPLE * 5);
+    assert_eq!(to_tick_time(4, 2, 3, 1), BEAT_SAMPLE * 6);
+    assert_eq!(to_tick_time(4, 2, 4, 1), BEAT_SAMPLE * 7);
+    assert_eq!(to_tick_time(4, 2, 5, 1), BEAT_SAMPLE * 8);
 
-  assert_eq!(to_tick_time(4, 1, 1, 1), 0);
-  assert_eq!(to_tick_time(4, 1, 1, 2), BEAT_INTERVAL_SAMPLE);
-  assert_eq!(to_tick_time(4, 1, 1, 3), BEAT_INTERVAL_SAMPLE * 2);
-  assert_eq!(to_tick_time(4, 1, 1, 4), BEAT_INTERVAL_SAMPLE * 3);
-  assert_eq!(to_tick_time(4, 1, 1, 5), BEAT_INTERVAL_SAMPLE * 4);
-  assert_eq!(to_tick_time(4, 1, 1, 6), BEAT_INTERVAL_SAMPLE * 5);
-  assert_eq!(to_tick_time(4, 1, 1, 7), BEAT_INTERVAL_SAMPLE * 6);
-  assert_eq!(to_tick_time(4, 1, 1, 8), BEAT_INTERVAL_SAMPLE * 7);
-  assert_eq!(to_tick_time(4, 1, 2, 1), BEAT_INTERVAL_SAMPLE * 8);
-  assert_eq!(to_tick_time(4, 1, 2, 2), BEAT_INTERVAL_SAMPLE * 9);
-  assert_eq!(to_tick_time(4, 1, 2, 3), BEAT_INTERVAL_SAMPLE * 10);
-  assert_eq!(to_tick_time(4, 1, 2, 4), BEAT_INTERVAL_SAMPLE * 11);
-  assert_eq!(to_tick_time(4, 1, 2, 5), BEAT_INTERVAL_SAMPLE * 12);
-  assert_eq!(to_tick_time(4, 1, 2, 6), BEAT_INTERVAL_SAMPLE * 13);
-  assert_eq!(to_tick_time(4, 1, 2, 7), BEAT_INTERVAL_SAMPLE * 14);
-  assert_eq!(to_tick_time(4, 1, 2, 8), BEAT_INTERVAL_SAMPLE * 15);
-}
+    assert_eq!(to_tick_time(3, 1, 1, 1), 0);
+    assert_eq!(to_tick_time(3, 1, 2, 1), BEAT_SAMPLE);
+    assert_eq!(to_tick_time(3, 1, 3, 1), BEAT_SAMPLE * 2);
+    assert_eq!(to_tick_time(3, 2, 1, 1), BEAT_SAMPLE * 3);
+    assert_eq!(to_tick_time(3, 2, 2, 1), BEAT_SAMPLE * 4);
+    assert_eq!(to_tick_time(3, 2, 3, 1), BEAT_SAMPLE * 5);
+    assert_eq!(to_tick_time(3, 3, 1, 1), BEAT_SAMPLE * 6);
+    assert_eq!(to_tick_time(3, 3, 2, 1), BEAT_SAMPLE * 7);
+    assert_eq!(to_tick_time(3, 3, 3, 1), BEAT_SAMPLE * 8);
 
-#[test]
-fn test_event_delta() {
-  let mut total_time = 0;
+    assert_eq!(to_tick_time(4, 1, 1, 1), 0);
+    assert_eq!(to_tick_time(4, 1, 1, 2), BEAT_INTERVAL_SAMPLE);
+    assert_eq!(to_tick_time(4, 1, 1, 3), BEAT_INTERVAL_SAMPLE * 2);
+    assert_eq!(to_tick_time(4, 1, 1, 4), BEAT_INTERVAL_SAMPLE * 3);
+    assert_eq!(to_tick_time(4, 1, 1, 5), BEAT_INTERVAL_SAMPLE * 4);
+    assert_eq!(to_tick_time(4, 1, 1, 6), BEAT_INTERVAL_SAMPLE * 5);
+    assert_eq!(to_tick_time(4, 1, 1, 7), BEAT_INTERVAL_SAMPLE * 6);
+    assert_eq!(to_tick_time(4, 1, 1, 8), BEAT_INTERVAL_SAMPLE * 7);
+    assert_eq!(to_tick_time(4, 1, 2, 1), BEAT_INTERVAL_SAMPLE * 8);
+    assert_eq!(to_tick_time(4, 1, 2, 2), BEAT_INTERVAL_SAMPLE * 9);
+    assert_eq!(to_tick_time(4, 1, 2, 3), BEAT_INTERVAL_SAMPLE * 10);
+    assert_eq!(to_tick_time(4, 1, 2, 4), BEAT_INTERVAL_SAMPLE * 11);
+    assert_eq!(to_tick_time(4, 1, 2, 5), BEAT_INTERVAL_SAMPLE * 12);
+    assert_eq!(to_tick_time(4, 1, 2, 6), BEAT_INTERVAL_SAMPLE * 13);
+    assert_eq!(to_tick_time(4, 1, 2, 7), BEAT_INTERVAL_SAMPLE * 14);
+    assert_eq!(to_tick_time(4, 1, 2, 8), BEAT_INTERVAL_SAMPLE * 15);
+  }
 
-  let mut to_delta_time = |bar: u16, beat: u8, beat_interval: u8| -> u32 {
-    let delta_time = to_tick_time(4, bar, beat, beat_interval) - total_time;
-    total_time = to_tick_time(4, bar, beat, beat_interval);
-    delta_time
-  };
+  #[test]
+  fn test_event_delta() {
+    use crate::io::exporter::*;
+    let mut total_time = 0;
 
-  assert_eq!(to_delta_time(1, 1, 1), 0);
-  assert_eq!(to_delta_time(1, 2, 1), 480);
-  assert_eq!(to_delta_time(2, 1, 1), 1440);
-  assert_eq!(to_delta_time(2, 2, 1), 480);
-  assert_eq!(to_delta_time(3, 1, 1), 1440);
-  assert_eq!(to_delta_time(3, 1, 2), 60);
-  assert_eq!(to_delta_time(3, 1, 3), 60);
-  assert_eq!(to_delta_time(3, 1, 6), 180);
+    let mut to_delta_time = |bar: u16, beat: u8, beat_interval: u8| -> u32 {
+      let delta_time = to_tick_time(4, bar, beat, beat_interval) - total_time;
+      total_time = to_tick_time(4, bar, beat, beat_interval);
+      delta_time
+    };
+
+    assert_eq!(to_delta_time(1, 1, 1), 0);
+    assert_eq!(to_delta_time(1, 2, 1), 480);
+    assert_eq!(to_delta_time(2, 1, 1), 1440);
+    assert_eq!(to_delta_time(2, 2, 1), 480);
+    assert_eq!(to_delta_time(3, 1, 1), 1440);
+    assert_eq!(to_delta_time(3, 1, 2), 60);
+    assert_eq!(to_delta_time(3, 1, 3), 60);
+    assert_eq!(to_delta_time(3, 1, 6), 180);
+  }
 }

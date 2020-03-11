@@ -92,50 +92,53 @@ impl Composition {
   }
 }
 
-#[test]
-fn test_create() {
-  let mut compo = Composition::new("test");
-  assert_eq!(compo.get_name(), "test");
+mod tests {
+  #[test]
+  fn test_create() {
+    use crate::composition::*;
+    let mut compo = Composition::new("test");
+    assert_eq!(compo.get_name(), "test");
 
-  compo.push_new_pattern("a".to_string(), 120, TimeSignature::default());
-  compo
-    .get_mut(0)
-    .push_event(MusicTime::new(1, 1, 1), vec![0, 1, 2]);
-  compo
-    .get_mut(0)
-    .push_event(MusicTime::new(2, 1, 1), vec![2, 3, 4]);
+    compo.push_new_pattern("a".to_string(), 120, TimeSignature::default());
+    compo
+      .get_mut(0)
+      .push_event(MusicTime::new(1, 1, 1), vec![0, 1, 2]);
+    compo
+      .get_mut(0)
+      .push_event(MusicTime::new(2, 1, 1), vec![2, 3, 4]);
 
-  compo.push_new_pattern("a".to_string(), 54, TimeSignature::new(3, 4));
-  compo
-    .get_mut(1)
-    .push_event(MusicTime::new(1, 3, 1), vec![51, 51, 52]);
-  compo
-    .get_mut(1)
-    .push_event(MusicTime::new(2, 4, 1), vec![52, 53, 54]);
+    compo.push_new_pattern("a".to_string(), 54, TimeSignature::new(3, 4));
+    compo
+      .get_mut(1)
+      .push_event(MusicTime::new(1, 3, 1), vec![51, 51, 52]);
+    compo
+      .get_mut(1)
+      .push_event(MusicTime::new(2, 4, 1), vec![52, 53, 54]);
 
-  assert_eq!(compo.len(), 2);
-  assert_eq!(compo.get(0).len(), 2);
-  assert_eq!(compo.get(1).len(), 2);
+    assert_eq!(compo.len(), 2);
+    assert_eq!(compo.get(0).len(), 2);
+    assert_eq!(compo.get(1).len(), 2);
 
-  assert_eq!(compo.get(0).get_bpm(), 120);
-  assert_eq!(compo.get(0).get_time_signature(), TimeSignature::new(4, 4));
+    assert_eq!(compo.get(0).get_bpm(), 120);
+    assert_eq!(compo.get(0).get_time_signature(), TimeSignature::new(4, 4));
 
-  assert_eq!(compo.get(1).get_bpm(), 54);
-  assert_eq!(compo.get(1).get_time_signature(), TimeSignature::new(3, 4));
+    assert_eq!(compo.get(1).get_bpm(), 54);
+    assert_eq!(compo.get(1).get_time_signature(), TimeSignature::new(3, 4));
 
-  let (time, notes) = compo.get(0).get(0);
-  assert_eq!(time, &MusicTime::new(1, 1, 1));
-  assert_eq!(notes, &vec![0, 1, 2]);
+    let (time, notes) = compo.get(0).get(0);
+    assert_eq!(time, &MusicTime::new(1, 1, 1));
+    assert_eq!(notes, &vec![0, 1, 2]);
 
-  let (time, notes) = compo.get(0).get(1);
-  assert_eq!(time, &MusicTime::new(2, 1, 1));
-  assert_eq!(notes, &vec![2, 3, 4]);
+    let (time, notes) = compo.get(0).get(1);
+    assert_eq!(time, &MusicTime::new(2, 1, 1));
+    assert_eq!(notes, &vec![2, 3, 4]);
 
-  let (time, notes) = compo.get(1).get(0);
-  assert_eq!(time, &MusicTime::new(1, 3, 1));
-  assert_eq!(notes, &vec![51, 51, 52]);
+    let (time, notes) = compo.get(1).get(0);
+    assert_eq!(time, &MusicTime::new(1, 3, 1));
+    assert_eq!(notes, &vec![51, 51, 52]);
 
-  let (time, notes) = compo.get(1).get(1);
-  assert_eq!(time, &MusicTime::new(2, 4, 1));
-  assert_eq!(notes, &vec![52, 53, 54]);
+    let (time, notes) = compo.get(1).get(1);
+    assert_eq!(time, &MusicTime::new(2, 4, 1));
+    assert_eq!(notes, &vec![52, 53, 54]);
+  }
 }
