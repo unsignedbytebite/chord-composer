@@ -136,29 +136,37 @@ fn test_play_file() {
     fn on_ready(&mut self, composition: &Composition) {
       self.callback_calls += 1;
       assert_eq!(composition.get_name(), "middle_c");
+      println!("on_ready");
     }
     fn on_beat_interval_change(&mut self, current_time: &MusicTime) {
       self.callback_calls += 1;
       self.current_time = current_time.clone();
+      println!("on_beat_interval_change: {:?}", current_time);
     }
-    fn on_beat_change(&mut self, _current_time: &MusicTime) {
+    fn on_beat_change(&mut self, current_time: &MusicTime) {
       self.callback_calls += 1;
+      println!("on_beat_change: {:?}", current_time);
     }
-    fn on_bar_change(&mut self, _current_time: &MusicTime) {
+    fn on_bar_change(&mut self, current_time: &MusicTime) {
       self.callback_calls += 1;
+      println!("on_bar_change: {:?}", current_time);
     }
     fn on_event(&mut self, _event: &PatternEvent) {
       self.callback_calls += 1;
+      println!("on_event");
     }
     fn on_pattern_playback_begin(&mut self, _pattern: &Pattern) {
       self.callback_calls += 1;
+      println!("on_pattern_playback_begin");
     }
     fn on_pattern_playback_end(&mut self, _pattern: &Pattern) {
       self.callback_calls += 1;
+      println!("on_pattern_playback_end");
     }
     fn on_completed(&mut self, composition: &Composition) {
       self.callback_calls += 1;
       assert_eq!(composition.get_name(), "middle_c");
+      println!("on_completed");
     }
   }
 
@@ -168,22 +176,23 @@ fn test_play_file() {
   };
 
   assert_eq!(
-    chord_composer::play(file, &mut my_state, true, &Vec::new(), &Vec::new()),
+    chord_composer::play(file, &mut my_state, false, &Vec::new(), &Vec::new()),
     Ok(chord_composer::SuccessResult::Playback)
   );
 
-  assert_eq!(my_state.callback_calls, 34);
+  assert_eq!(my_state.callback_calls, 33);
   assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
 }
 
 //TODO: test to interface engine without parsing data
 
 #[test]
-fn export_midi_api() {
+fn play_composition_api() {
   assert!(false, "TODO");
 }
 
 #[test]
-fn play_composition_api() {
+fn export_midi_api() {
   assert!(false, "TODO");
 }
+
