@@ -1,5 +1,54 @@
 extern crate chord_composer;
 
+use chord_composer::{
+  performance::performance_engine::PerformanceState,
+  theory::composition::{Composition, Pattern, PatternEvent},
+};
+use music_timer::{music_time::MusicTime, time_signature::TimeSignature};
+
+struct MyState {
+  callback_calls: u16,
+  current_time: MusicTime,
+}
+
+impl PerformanceState for MyState {
+  fn on_ready(&mut self, composition: &Composition) {
+    self.callback_calls += 1;
+    assert_eq!(composition.get_name(), "middle_c");
+    println!("on_ready");
+  }
+  fn on_beat_interval_change(&mut self, current_time: &MusicTime) {
+    self.callback_calls += 1;
+    self.current_time = current_time.clone();
+    println!("on_beat_interval_change: {:?}", current_time);
+  }
+  fn on_beat_change(&mut self, current_time: &MusicTime) {
+    self.callback_calls += 1;
+    println!("on_beat_change: {:?}", current_time);
+  }
+  fn on_bar_change(&mut self, current_time: &MusicTime) {
+    self.callback_calls += 1;
+    println!("on_bar_change: {:?}", current_time);
+  }
+  fn on_event(&mut self, _event: &PatternEvent) {
+    self.callback_calls += 1;
+    println!("on_event");
+  }
+  fn on_pattern_playback_begin(&mut self, _pattern: &Pattern) {
+    self.callback_calls += 1;
+    println!("on_pattern_playback_begin");
+  }
+  fn on_pattern_playback_end(&mut self, _pattern: &Pattern) {
+    self.callback_calls += 1;
+    println!("on_pattern_playback_end");
+  }
+  fn on_completed(&mut self, composition: &Composition) {
+    self.callback_calls += 1;
+    assert_eq!(composition.get_name(), "middle_c");
+    println!("on_completed");
+  }
+}
+
 #[test]
 fn chord_to_string_array() {
   let chords = chord_composer::get_chord_keywords();
@@ -127,49 +176,6 @@ fn test_play_file() {
   };
   use music_timer::music_time::MusicTime;
 
-  struct MyState {
-    callback_calls: u16,
-    current_time: MusicTime,
-  }
-
-  impl PerformanceState for MyState {
-    fn on_ready(&mut self, composition: &Composition) {
-      self.callback_calls += 1;
-      assert_eq!(composition.get_name(), "middle_c");
-      println!("on_ready");
-    }
-    fn on_beat_interval_change(&mut self, current_time: &MusicTime) {
-      self.callback_calls += 1;
-      self.current_time = current_time.clone();
-      println!("on_beat_interval_change: {:?}", current_time);
-    }
-    fn on_beat_change(&mut self, current_time: &MusicTime) {
-      self.callback_calls += 1;
-      println!("on_beat_change: {:?}", current_time);
-    }
-    fn on_bar_change(&mut self, current_time: &MusicTime) {
-      self.callback_calls += 1;
-      println!("on_bar_change: {:?}", current_time);
-    }
-    fn on_event(&mut self, _event: &PatternEvent) {
-      self.callback_calls += 1;
-      println!("on_event");
-    }
-    fn on_pattern_playback_begin(&mut self, _pattern: &Pattern) {
-      self.callback_calls += 1;
-      println!("on_pattern_playback_begin");
-    }
-    fn on_pattern_playback_end(&mut self, _pattern: &Pattern) {
-      self.callback_calls += 1;
-      println!("on_pattern_playback_end");
-    }
-    fn on_completed(&mut self, composition: &Composition) {
-      self.callback_calls += 1;
-      assert_eq!(composition.get_name(), "middle_c");
-      println!("on_completed");
-    }
-  }
-
   let mut my_state = MyState {
     callback_calls: 0,
     current_time: MusicTime::default(),
@@ -188,11 +194,28 @@ fn test_play_file() {
 
 #[test]
 fn play_composition_api() {
-  assert!(false, "TODO");
+  let composition = Composition::new_with_patterns(
+    "test composition",
+    vec![Pattern::new_with_events(
+      "pattern A",
+      100,
+      TimeSignature::default(),
+      vec![
+        (MusicTime::new(1, 1, 1), vec![0, 4, 7]),
+        (MusicTime::new(2, 1, 1), vec![0, 3, 7]),
+      ],
+    )],
+  );
+
+  let mut my_state = MyState {
+    callback_calls: 0,
+    current_time: MusicTime::default(),
+  };
+
+  chord_composer::play(composition, &mut my_state, false, &Vec::new(), &Vec::new());
 }
 
 #[test]
 fn export_midi_api() {
   assert!(false, "TODO");
 }
-

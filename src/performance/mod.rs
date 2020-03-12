@@ -81,7 +81,7 @@ mod tests {
     let composition = {
       let mut composition = composition::Composition::new("test compo");
       let mut pattern = composition::Pattern::new(
-        "pattern_z".to_string(),
+        "pattern_z",
         140,
         time_signature::TimeSignature::default(),
       );
@@ -91,7 +91,7 @@ mod tests {
       composition.push_pattern(pattern);
 
       let mut pattern = composition::Pattern::new(
-        "pattern_y".to_string(),
+        "pattern_y",
         130,
         time_signature::TimeSignature::default(),
       );
@@ -153,7 +153,7 @@ mod tests {
     let composition = {
       let mut composition = composition::Composition::new("test compo");
       let mut pattern = composition::Pattern::new(
-        "pattern_z".to_string(),
+        "pattern_z",
         140,
         time_signature::TimeSignature::default(),
       );

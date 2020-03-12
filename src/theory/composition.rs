@@ -11,9 +11,9 @@ pub struct Pattern {
 }
 
 impl Pattern {
-  pub fn new(name: String, bpm: u8, signature: TimeSignature) -> Self {
+  pub fn new(name: &str, bpm: u8, signature: TimeSignature) -> Self {
     Pattern {
-      name,
+      name: name.to_owned(),
       bpm,
       signature,
       events: Vec::new(),
@@ -21,14 +21,14 @@ impl Pattern {
   }
 
   pub fn new_with_events(
-    name: String,
+    name: &str,
     bpm: u8,
     signature: TimeSignature,
     events: Vec<PatternEvent>,
   ) -> Self {
     //TODO: sort events
     Pattern {
-      name,
+      name: name.to_owned(),
       bpm,
       signature,
       events,
@@ -94,6 +94,13 @@ impl Composition {
     }
   }
 
+  pub fn new_with_patterns(name: &str, patterns: Vec<Pattern>) -> Self {
+    Composition {
+      name: name.to_string(),
+      patterns,
+    }
+  }
+
   pub fn push_new_pattern(&mut self, name: String, bpm: u8, signature: TimeSignature) {
     self.patterns.push(Pattern::new(name, bpm, signature));
   }
@@ -105,6 +112,7 @@ impl Composition {
   pub fn len(&self) -> usize {
     self.patterns.len()
   }
+
   pub fn get(&self, index: usize) -> &Pattern {
     &self.patterns[index]
   }
