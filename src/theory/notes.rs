@@ -120,6 +120,7 @@ mod tests {
     assert_eq!(midi_to_note(60), (4, Key::C));
     assert_eq!(midi_to_note(60 - 12 + 3), (3, Key::Ds));
   }
+
   #[test]
   fn test_conversions() {
     use crate::theory::notes::*;

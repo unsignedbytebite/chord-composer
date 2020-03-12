@@ -20,6 +20,21 @@ impl Pattern {
     }
   }
 
+  pub fn new_with_events(
+    name: String,
+    bpm: u8,
+    signature: TimeSignature,
+    events: Vec<PatternEvent>,
+  ) -> Self {
+    //TODO: sort events
+    Pattern {
+      name,
+      bpm,
+      signature,
+      events,
+    }
+  }
+
   pub fn push_event(&mut self, time: MusicTime, notes: Vec<u8>) -> &Self {
     self.events.push((time, notes));
     self
@@ -48,6 +63,21 @@ impl Pattern {
   pub fn get_name(&self) -> &str {
     &self.name
   }
+
+  pub fn find_next_event_index(&self, time: &MusicTime) -> usize {
+    let mut event_head = 0;
+    for event in &self.events {
+      let (event_time, _intervals) = event;
+      if event_time >= time {
+        break;
+      }
+      event_head += 1;
+    }
+
+    event_head
+  }
+
+  //TODO: sort events
 }
 
 #[derive(Debug)]
@@ -140,5 +170,28 @@ mod tests {
     let (time, notes) = compo.get(1).get(1);
     assert_eq!(time, &MusicTime::new(2, 4, 1));
     assert_eq!(notes, &vec![52, 53, 54]);
+  }
+
+  #[test]
+  fn test_find_next_event() {
+    use crate::composition::Pattern;
+    use music_timer::{music_time::MusicTime, time_signature::TimeSignature};
+
+    let pattern = Pattern::new_with_events(
+      "test pattern".to_owned(),
+      85,
+      TimeSignature::default(),
+      vec![
+        (MusicTime::new(1, 1, 1), vec![0]),
+        (MusicTime::new(2, 1, 1), vec![0]),
+        (MusicTime::new(3, 1, 1), vec![0]),
+        (MusicTime::new(3, 4, 1), vec![0]),
+        (MusicTime::new(4, 1, 1), vec![0]),
+      ],
+    );
+
+    let time = MusicTime::new(3, 3, 2);
+    let result = Pattern::find_next_event_index(&pattern, &time);
+    assert_eq!(result, 3);
   }
 }

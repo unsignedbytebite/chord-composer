@@ -56,22 +56,6 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
       })
     }
   }
-  pub fn find_next_event(
-    &self,
-    pattern: &composition::Pattern,
-    time: &music_time::MusicTime,
-  ) -> usize {
-    let mut event_head = 0;
-    for event in pattern.get_events() {
-      let (event_time, _intervals) = event;
-      if event_time >= time {
-        break;
-      }
-      event_head += 1;
-    }
-
-    event_head
-  }
 
   pub fn run(&mut self) {
     self.run_from(&music_time::MusicTime::default());
@@ -92,8 +76,8 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
 
       // Set the current time for playback and
       // advance events to that time
-      music_timer.set_current_time(*start_time);
-      self.event_head = self.find_next_event(pattern, start_time);
+      self.event_head = pattern.find_next_event_index(start_time);
+      music_timer.set_music_timer(*start_time);
 
       // Assign current pattern
       self.current_pattern = pattern;
@@ -153,6 +137,7 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     if !self.is_playing {
       return;
     }
+
     self.state.on_beat_change(current_time);
     if self.is_metronome_enabled && current_time.get_beat() != 1 {
       self.sampler_metronome.play(0);
@@ -163,19 +148,10 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
     if !self.is_playing {
       return;
     }
-    self.state.on_bar_change(current_time);
 
+    self.state.on_bar_change(current_time);
     if self.is_metronome_enabled {
       self.sampler_metronome.play(1);
     }
-  }
-}
-
-mod tests {
-  #[test]
-  fn test_find_next_event() {
-    // let perform = PerformanceEngine::new();
-
-    assert!(false, "TODO");
   }
 }
