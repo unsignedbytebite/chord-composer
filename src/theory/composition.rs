@@ -26,13 +26,14 @@ impl Pattern {
     signature: TimeSignature,
     events: Vec<PatternEvent>,
   ) -> Self {
-    //TODO: sort events
-    Pattern {
+    let mut pattern = Pattern {
       name: name.to_owned(),
       bpm,
       signature,
       events,
-    }
+    };
+    pattern.sort_events();
+    pattern
   }
 
   pub fn push_event(&mut self, time: MusicTime, notes: Vec<u8>) -> &Self {
@@ -65,6 +66,7 @@ impl Pattern {
   }
 
   pub fn find_next_event_index(&self, time: &MusicTime) -> usize {
+    //TODO: improve
     let mut event_head = 0;
     for event in &self.events {
       let (event_time, _intervals) = event;
@@ -77,7 +79,9 @@ impl Pattern {
     event_head
   }
 
-  //TODO: sort events
+  pub fn sort_events(&mut self) {
+    self.events.sort_by(|a, b| b.0.cmp(&a.0));
+  }
 }
 
 #[derive(Debug)]
@@ -102,7 +106,7 @@ impl Composition {
   }
 
   pub fn push_new_pattern(&mut self, name: String, bpm: u8, signature: TimeSignature) {
-    self.patterns.push(Pattern::new(name, bpm, signature));
+    self.patterns.push(Pattern::new(&name, bpm, signature));
   }
 
   pub fn push_pattern(&mut self, pattern: Pattern) {
@@ -186,7 +190,7 @@ mod tests {
     use music_timer::{music_time::MusicTime, time_signature::TimeSignature};
 
     let pattern = Pattern::new_with_events(
-      "test pattern".to_owned(),
+      "test pattern",
       85,
       TimeSignature::default(),
       vec![
@@ -201,5 +205,10 @@ mod tests {
     let time = MusicTime::new(3, 3, 2);
     let result = Pattern::find_next_event_index(&pattern, &time);
     assert_eq!(result, 3);
+  }
+
+  #[test]
+  fn test_event_order() {
+    assert_eq!(false, true);
   }
 }
