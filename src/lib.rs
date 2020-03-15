@@ -55,28 +55,25 @@ pub fn export_composition_to_midi(composition_path: &str) -> Result<SuccessResul
   io::exporter::export_composition(&composition, parent_directory)
 }
 
-// pub fn play<State: performance_engine::PerformanceState>(
-//   composition: &composition::Composition,
-//   performance_state: &mut State,
-//   is_metronome_enabled: bool,
-//   sample_paths_metronome: &Vec<String>,
-//   sample_paths_piano: &Vec<String>,
-// ) -> Result<SuccessResult, FailResult> {
-//   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
-//   let composition = parameters_to_composition(&composition_parameters)?;
+pub fn play<State: performance_engine::PerformanceState>(
+  composition: &composition::Composition,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+  sample_paths_metronome: &Vec<String>,
+  sample_paths_piano: &Vec<String>,
+) -> Result<SuccessResult, FailResult> {
+  let mut performance_engine = performance_engine::PerformanceEngine::new(
+    &composition,
+    performance_state,
+    sample_paths_metronome,
+    sample_paths_piano,
+  )?;
 
-//   let mut performance_engine = performance_engine::PerformanceEngine::new(
-//     &composition,
-//     performance_state,
-//     sample_paths_metronome,
-//     sample_paths_piano,
-//   )?;
+  performance_engine.set_metronome_enabled(is_metronome_enabled);
+  performance_engine.run();
 
-//   performance_engine.set_metronome_enabled(is_metronome_enabled);
-//   performance_engine.run();
-
-//   Ok(SuccessResult::Playback)
-// }
+  Ok(SuccessResult::Playback)
+}
 
 // pub fn play_yaml<State: performance_engine::PerformanceState>(
 //   composition: &composition::Composition,

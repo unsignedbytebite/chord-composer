@@ -66,21 +66,15 @@ impl Pattern {
   }
 
   pub fn find_next_event_index(&self, time: &MusicTime) -> usize {
-    //TODO: improve
-    let mut event_head = 0;
-    for event in &self.events {
-      let (event_time, _intervals) = event;
-      if event_time >= time {
-        break;
-      }
-      event_head += 1;
-    }
-
-    event_head
+    self
+      .events
+      .iter()
+      .position(|event| &event.0 >= time)
+      .unwrap_or(0)
   }
 
   pub fn sort_events(&mut self) {
-    self.events.sort_by(|a, b| b.0.cmp(&a.0));
+    self.events.sort_by(|a, b| a.0.cmp(&b.0));
   }
 }
 
@@ -209,6 +203,31 @@ mod tests {
 
   #[test]
   fn test_event_order() {
-    assert_eq!(false, true);
+    use crate::composition::Pattern;
+    use music_timer::{music_time::MusicTime, time_signature::TimeSignature};
+
+    let pattern = Pattern::new_with_events(
+      "test pattern",
+      85,
+      TimeSignature::default(),
+      vec![
+        (MusicTime::new(2, 1, 1), vec![0]),
+        (MusicTime::new(1, 1, 1), vec![0]),
+        (MusicTime::new(4, 1, 1), vec![0]),
+        (MusicTime::new(3, 1, 1), vec![0]),
+        (MusicTime::new(3, 4, 1), vec![0]),
+      ],
+    );
+
+    assert_eq!(
+      pattern.get_events(),
+      &vec![
+        (MusicTime::new(1, 1, 1), vec![0]),
+        (MusicTime::new(2, 1, 1), vec![0]),
+        (MusicTime::new(3, 1, 1), vec![0]),
+        (MusicTime::new(3, 4, 1), vec![0]),
+        (MusicTime::new(4, 1, 1), vec![0]),
+      ]
+    )
   }
 }

@@ -167,32 +167,6 @@ fn export_midi() {
 }
 
 #[test]
-fn test_play_file() {
-  let file = "./tests/middle_c.yaml";
-
-  use chord_composer::{
-    performance::performance_engine::PerformanceState,
-    theory::composition::{Composition, Pattern, PatternEvent},
-  };
-  use music_timer::music_time::MusicTime;
-
-  let mut my_state = MyState {
-    callback_calls: 0,
-    current_time: MusicTime::default(),
-  };
-
-  assert_eq!(
-    chord_composer::play_file(file, &mut my_state, false, &Vec::new(), &Vec::new()),
-    Ok(chord_composer::SuccessResult::Playback)
-  );
-
-  assert_eq!(my_state.callback_calls, 33);
-  assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
-}
-
-//TODO: test to interface engine without parsing data
-
-#[test]
 fn play_composition_api() {
   let composition = Composition::new_with_patterns(
     "test composition",
@@ -212,10 +186,45 @@ fn play_composition_api() {
     current_time: MusicTime::default(),
   };
 
-  chord_composer::play(composition, &mut my_state, false, &Vec::new(), &Vec::new());
+  chord_composer::play(&composition, &mut my_state, false, &Vec::new(), &Vec::new());
+}
+
+#[test]
+fn play_composition_yaml() {
+  assert!(false, "TODO");
+}
+
+#[test]
+fn play_composition_file() {
+  use music_timer::music_time::MusicTime;
+  
+  let file = "./tests/middle_c.yaml";
+  let mut my_state = MyState {
+    callback_calls: 0,
+    current_time: MusicTime::default(),
+  };
+
+  assert_eq!(
+    chord_composer::play_file(file, &mut my_state, false, &Vec::new(), &Vec::new()),
+    Ok(chord_composer::SuccessResult::Playback)
+  );
+
+  assert_eq!(my_state.callback_calls, 33);
+  assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
 }
 
 #[test]
 fn export_midi_api() {
   assert!(false, "TODO");
 }
+
+#[test]
+fn export_midi_yaml() {
+  assert!(false, "TODO");
+}
+
+#[test]
+fn export_midi_file() {
+  assert!(false, "TODO");
+}
+
