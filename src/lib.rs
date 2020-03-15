@@ -149,6 +149,13 @@ pub fn play_from_index<State: performance_engine::PerformanceState>(
 ///
 /// # Example
 /// ```
+/// use chord_composer::{
+///   performance::performance_engine::PerformanceState,
+///   theory::composition::{Composition, Pattern, PatternEvent},
+///   FailResult, SuccessResult,
+/// };
+/// use music_timer::{music_time::MusicTime, time_signature::TimeSignature};
+/// 
 /// struct MyState {
 ///   events: u16,
 ///   current_time: MusicTime,
