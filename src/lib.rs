@@ -55,6 +55,19 @@ pub fn export_composition_to_midi(composition_path: &str) -> Result<SuccessResul
   io::exporter::export_composition(&composition, parent_directory)
 }
 
+pub fn build_event(
+  bar: u16,
+  beat: u8,
+  beat_interval: u8,
+  chord_intervals: Vec<i8>,
+  transpose: i8,
+) -> composition::PatternEvent {
+  (
+    music_time::MusicTime::new(bar, beat, beat_interval),
+    chords::IntervalChord::new(chord_intervals, transpose).to_midi(),
+  )
+}
+
 pub fn play<State: performance_engine::PerformanceState>(
   composition: &composition::Composition,
   performance_state: &mut State,

@@ -339,7 +339,7 @@ impl IntervalChord {
         custom_chords[index].1.clone()
       };
 
-      IntervalChord {
+      Self {
         intervals: random_chord_intervals,
         transpose: 0,
       }
@@ -358,7 +358,7 @@ impl IntervalChord {
         all_chords[index].clone()
       };
 
-      IntervalChord {
+      Self {
         intervals: random_chord_intervals,
         transpose: 0,
       }
@@ -376,6 +376,13 @@ impl IntervalChord {
       }
 
       chord
+    }
+  }
+
+  pub fn new(intervals: Vec<i8>, transpose: i8) -> Self {
+    Self {
+      intervals,
+      transpose,
     }
   }
 
