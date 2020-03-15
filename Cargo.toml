@@ -20,9 +20,9 @@ with-sound = ["rodio"]
 [dependencies]
 rodio = {version ="0.10.0", optional = true} 
 stopwatch = "0.0.7"
-serde = "1.0.103"
+serde = "1.0.104"
 serde_yaml = "0.8.11"
-serde_derive = "1.0.103"
-ghakuf = "0.5.3"
-rand = "0.4.6"
+serde_derive = "1.0.104"
+ghakuf = "0.5.4"
+rand = "0.7.3"
 music-timer = {path="../music-timer"}

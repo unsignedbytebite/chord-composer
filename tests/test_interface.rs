@@ -185,32 +185,6 @@ fn play_empty_composition() {
   );
 }
 
-// #[test]
-// fn play_middle_c() {
-//   let composition = Composition::new_with_patterns(
-//     "middle_c",
-//     vec![Pattern::new_with_events(
-//       "part_a",
-//       100,
-//       TimeSignature::default(),
-//       vec![chord_composer::build_event(1, 1, 1, vec![0], 0)],
-//     )],
-//   );
-
-//   let mut my_state = MiddleCState {
-//     callback_calls: 0,
-//     current_time: MusicTime::default(),
-//   };
-
-//   assert_eq!(
-//     chord_composer::play(&composition, &mut my_state, false, &Vec::new(), &Vec::new()),
-//     Ok(SuccessResult::Playback),
-//   );
-
-//   assert_eq!(my_state.callback_calls, 42);
-//   assert_eq!(my_state.current_time, MusicTime::new(1, 4, 8));
-// }
-
 #[test]
 fn play_middle_c_yaml() {
   use music_timer::music_time::MusicTime;

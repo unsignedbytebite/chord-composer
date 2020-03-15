@@ -32,7 +32,7 @@ pub fn export_midi_patterns(
   parent_directory: &str,
 ) -> Result<crate::SuccessResult, crate::FailResult> {
   let target_dir = format!("{}/{}", parent_directory, composition_name);
-
+  
   // Flush directory
   let _ = std::fs::remove_dir_all(&target_dir).is_ok();
   std::fs::create_dir(&target_dir).unwrap();
