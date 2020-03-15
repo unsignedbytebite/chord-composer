@@ -105,7 +105,7 @@ impl<'a, State: PerformanceState> music_timer_engine::MusicTimerState
 
     const MAX_BEAT_INTERVALS: u8 = 8;
     self.is_playing = !(events_complete
-      && current_time.get_beat() == 3
+      && current_time.get_beat() == self.current_pattern.get_time_signature().get_numerator()
       && current_time.get_beat_interval() == MAX_BEAT_INTERVALS);
 
     self.state.on_beat_interval_change(current_time);

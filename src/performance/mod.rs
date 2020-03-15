@@ -66,7 +66,7 @@ mod tests {
       }
       fn on_pattern_playback_end(&mut self, pattern: &composition::Pattern) {
         self.callback_calls += 1;
-        if self.callback_calls < 109 {
+        if self.callback_calls < 119 {
           assert_eq!(pattern.get_name(), "pattern_z");
         } else {
           assert_eq!(pattern.get_name(), "pattern_y");
@@ -118,8 +118,8 @@ mod tests {
       }
       _ => assert!(false, "Cannot create performance engine"),
     }
-    assert_eq!(my_state.callback_calls, 214);
-    assert_eq!(my_state.current_time, music_time::MusicTime::new(3, 3, 8));
+    assert_eq!(my_state.callback_calls, 232);
+    assert_eq!(my_state.current_time, music_time::MusicTime::new(3, 4, 8));
   }
 
   #[test]
@@ -180,7 +180,7 @@ mod tests {
       }
       _ => assert!(false, "Cannot create performance engine"),
     }
-    assert_eq!(my_state.beat_interval_count, 36);
-    assert_eq!(my_state.current_time, music_time::MusicTime::new(5, 3, 8));
+    assert_eq!(my_state.beat_interval_count, 44);
+    assert_eq!(my_state.current_time, music_time::MusicTime::new(5, 4, 8));
   }
 }

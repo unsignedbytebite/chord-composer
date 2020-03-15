@@ -186,7 +186,7 @@ fn play_empty_composition() {
 }
 
 #[test]
-fn play_composition() {
+fn play_middle_c() {
   let composition = Composition::new_with_patterns(
     "middle_c",
     vec![Pattern::new_with_events(
@@ -207,17 +207,17 @@ fn play_composition() {
     Ok(SuccessResult::Playback),
   );
 
-  assert_eq!(my_state.callback_calls, 33);
+  assert_eq!(my_state.callback_calls, 42);
   assert_eq!(my_state.current_time, MusicTime::new(1, 4, 8));
 }
 
 // #[test]
-// fn play_composition_yaml() {
+// fn play_middle_c_yaml() {
 //   assert!(false, "TODO");
 // }
 
 #[test]
-fn play_composition_file() {
+fn play_middle_c_file() {
   use music_timer::music_time::MusicTime;
   let file = "./tests/middle_c.yaml";
   let mut my_state = MyState {
@@ -230,8 +230,8 @@ fn play_composition_file() {
     Ok(chord_composer::SuccessResult::Playback)
   );
 
-  assert_eq!(my_state.callback_calls, 33);
-  assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
+  assert_eq!(my_state.callback_calls, 42);
+  assert_eq!(my_state.current_time, MusicTime::new(1, 4, 8));
 }
 
 // #[test]
