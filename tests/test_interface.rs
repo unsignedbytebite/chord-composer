@@ -3,7 +3,7 @@ extern crate chord_composer;
 use chord_composer::{
   performance::performance_engine::PerformanceState,
   theory::composition::{Composition, Pattern, PatternEvent},
-  SuccessResult,
+  FailResult, SuccessResult,
 };
 use music_timer::{music_time::MusicTime, time_signature::TimeSignature};
 
@@ -168,6 +168,21 @@ fn export_midi() {
   };
 
   assert_eq!(buffer, file2_bin);
+}
+
+#[test]
+fn play_empty_composition() {
+  let composition = Composition::new_with_patterns("middle_c", vec![]);
+
+  let mut my_state = MyState {
+    callback_calls: 0,
+    current_time: MusicTime::default(),
+  };
+
+  assert_eq!(
+    chord_composer::play(&composition, &mut my_state, false, &Vec::new(), &Vec::new()),
+    Err(FailResult::NoPatterns),
+  );
 }
 
 #[test]

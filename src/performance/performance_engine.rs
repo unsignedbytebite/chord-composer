@@ -32,28 +32,26 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
     sample_paths_metronome: &Vec<String>,
     sample_paths_piano: &Vec<String>,
   ) -> Result<Self, FailResult> {
-    if composition.len() == 0 {
-      // This should never panic IRL, the parsing should have picked up this error beforehand.
-      panic!("PerformanceEngine cannot be created with no patterns in the composition!");
-    }
-
-    let sampler_metronome = basic_sampler::SamplerPlayer::new(sample_paths_metronome);
-    let sampler_piano = basic_sampler::SamplerPlayer::new(&sample_paths_piano);
-
-    let error_loading = sampler_metronome.is_err() || sampler_piano.is_err();
-    if error_loading {
-      Err(FailResult::LoadSampler)
+    if composition.len() > 0 {
+      let sampler_metronome = basic_sampler::SamplerPlayer::new(sample_paths_metronome);
+      let sampler_piano = basic_sampler::SamplerPlayer::new(&sample_paths_piano);
+      let error_loading = sampler_metronome.is_err() || sampler_piano.is_err();
+      if error_loading {
+        Err(FailResult::LoadSampler)
+      } else {
+        Ok(PerformanceEngine {
+          sampler_metronome: sampler_metronome.unwrap(),
+          sampler_piano: sampler_piano.unwrap(),
+          event_head: 0,
+          current_pattern: &composition.get(0),
+          is_playing: false,
+          composition,
+          state,
+          is_metronome_enabled: false,
+        })
+      }
     } else {
-      Ok(PerformanceEngine {
-        sampler_metronome: sampler_metronome.unwrap(),
-        sampler_piano: sampler_piano.unwrap(),
-        event_head: 0,
-        current_pattern: &composition.get(0),
-        is_playing: false,
-        composition,
-        state,
-        is_metronome_enabled: false,
-      })
+      Err(FailResult::NoPatterns)
     }
   }
 
