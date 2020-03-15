@@ -64,7 +64,9 @@ pub fn build_event(
 ) -> composition::PatternEvent {
   (
     music_time::MusicTime::new(bar, beat, beat_interval),
-    chords::IntervalChord::new(chord_intervals, transpose).to_midi(),
+    chords::IntervalChord::new(chord_intervals, transpose)
+      .transpose_octave(3)
+      .to_midi(),
   )
 }
 
@@ -312,11 +314,10 @@ fn parameters_to_composition(
                       let key = notes::string_to_key(&key_string);
                       notes::key_to_index(key) as i8
                     };
-                    const PLAYBACK_OCTAVE: i8 = 3;
                     chord_intervals
                       .transpose(key_offset)
                       .transpose(*transpose)
-                      .transpose_octave(PLAYBACK_OCTAVE - 1)
+                      .transpose_octave(3)
                       .to_midi()
                   };
 
