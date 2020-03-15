@@ -56,12 +56,13 @@ impl<'a, State: PerformanceState> PerformanceEngine<'a, State> {
   }
 
   pub fn run(&mut self) {
-    self.run_from(&music_time::MusicTime::default());
+    self.run_from(&music_time::MusicTime::default(), 0);
   }
 
-  pub fn run_from(&mut self, start_time: &music_time::MusicTime) {
+  pub fn run_from(&mut self, start_time: &music_time::MusicTime, starting_pattern_index: usize) {
     self.state.on_ready(self.composition);
-    for pattern in self.composition.get_patterns() {
+    for pattern_index in starting_pattern_index..self.composition.get_patterns().len() {
+      let pattern = &self.composition.get_patterns()[pattern_index];
       self.state.on_pattern_playback_begin(pattern);
       self.is_playing = true;
 

@@ -18,6 +18,7 @@ pub enum FailResult {
   ExportMIDI,
   ExportTemplate,
   NoPatterns,
+  NoFoundPattern(String),
   EmptyPatterns,
   TimeReverse(music_time::MusicTime, usize, String),
   UnreachableTime(music_time::MusicTime, usize, String),
@@ -38,21 +39,28 @@ pub fn get_chord_keywords() -> Vec<&'static str> {
   theory::chords::chord_to_string_array()
 }
 
-/// Export composition patterns to midi files.
-///
-/// # Arguments
-/// * `composition_path` - The file path to the composition yaml file.
-pub fn export_composition_to_midi(composition_path: &str) -> Result<SuccessResult, FailResult> {
-  let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
-
-  let parent_directory = Path::new(composition_path)
+pub fn export_to_midi_file(
+  composition: &composition::Composition,
+  export_path: &str,
+) -> Result<SuccessResult, FailResult> {
+  let parent_directory = Path::new(export_path)
     .parent()
     .unwrap_or(Path::new("./"))
     .to_str()
     .unwrap_or("./");
 
-  let composition = parameters_to_composition(&composition_parameters)?;
   io::exporter::export_composition(&composition, parent_directory)
+}
+
+/// Export composition patterns to midi files.
+///
+/// # Arguments
+/// * `composition_path` - The file path to the composition yaml file.
+pub fn export_file_to_midi(composition_path: &str) -> Result<SuccessResult, FailResult> {
+  let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
+  let composition = parameters_to_composition(&composition_parameters)?;
+
+  export_to_midi_file(&composition, composition_path)
 }
 
 pub fn build_event(
@@ -70,12 +78,14 @@ pub fn build_event(
   )
 }
 
-pub fn play<State: performance_engine::PerformanceState>(
+pub fn play_from_index<State: performance_engine::PerformanceState>(
   composition: &composition::Composition,
   performance_state: &mut State,
   is_metronome_enabled: bool,
   sample_paths_metronome: &Vec<String>,
   sample_paths_piano: &Vec<String>,
+  playback_start: &music_timer::music_time::MusicTime,
+  pattern_start_index: usize,
 ) -> Result<SuccessResult, FailResult> {
   let mut performance_engine = performance_engine::PerformanceEngine::new(
     &composition,
@@ -85,33 +95,55 @@ pub fn play<State: performance_engine::PerformanceState>(
   )?;
 
   performance_engine.set_metronome_enabled(is_metronome_enabled);
-  performance_engine.run();
-
+  performance_engine.run_from(playback_start, pattern_start_index);
   Ok(SuccessResult::Playback)
 }
 
-// pub fn play_yaml<State: performance_engine::PerformanceState>(
-//   composition: &composition::Composition,
-//   performance_state: &mut State,
-//   is_metronome_enabled: bool,
-//   sample_paths_metronome: &Vec<String>,
-//   sample_paths_piano: &Vec<String>,
-// ) -> Result<SuccessResult, FailResult> {
-//   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
-//   let composition = parameters_to_composition(&composition_parameters)?;
+pub fn play_from<State: performance_engine::PerformanceState>(
+  composition: &composition::Composition,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+  sample_paths_metronome: &Vec<String>,
+  sample_paths_piano: &Vec<String>,
+  playback_start: &music_timer::music_time::MusicTime,
+  pattern_start_name: &str,
+) -> Result<SuccessResult, FailResult> {
+  let patterns_playback_index = composition
+    .get_patterns()
+    .iter()
+    .position(|pattern| pattern.get_name() == pattern_start_name);
 
-//   let mut performance_engine = performance_engine::PerformanceEngine::new(
-//     &composition,
-//     performance_state,
-//     sample_paths_metronome,
-//     sample_paths_piano,
-//   )?;
+  match patterns_playback_index {
+    Some(pattern_index) => play_from_index(
+      composition,
+      performance_state,
+      is_metronome_enabled,
+      sample_paths_metronome,
+      sample_paths_piano,
+      playback_start,
+      pattern_index,
+    ),
+    None => Err(FailResult::NoFoundPattern(pattern_start_name.to_owned())),
+  }
+}
 
-//   performance_engine.set_metronome_enabled(is_metronome_enabled);
-//   performance_engine.run();
-
-//   Ok(SuccessResult::Playback)
-// }
+pub fn play<State: performance_engine::PerformanceState>(
+  composition: &composition::Composition,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+  sample_paths_metronome: &Vec<String>,
+  sample_paths_piano: &Vec<String>,
+) -> Result<SuccessResult, FailResult> {
+  play_from_index(
+    composition,
+    performance_state,
+    is_metronome_enabled,
+    sample_paths_metronome,
+    sample_paths_piano,
+    &music_time::MusicTime::default(),
+    0,
+  )
+}
 
 /// Play composition patterns.
 ///
@@ -128,21 +160,33 @@ pub fn play_file<State: performance_engine::PerformanceState>(
 ) -> Result<SuccessResult, FailResult> {
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
   let composition = parameters_to_composition(&composition_parameters)?;
-
-  let mut performance_engine = performance_engine::PerformanceEngine::new(
+  play(
     &composition,
     performance_state,
+    is_metronome_enabled,
     sample_paths_metronome,
     sample_paths_piano,
-  )?;
-
-  performance_engine.set_metronome_enabled(is_metronome_enabled);
-  performance_engine.run();
-
-  Ok(SuccessResult::Playback)
+  )
 }
 
-//TODO:reduce duplication
+pub fn play_yaml<State: performance_engine::PerformanceState>(
+  composition_yaml: &str,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+  sample_paths_metronome: &Vec<String>,
+  sample_paths_piano: &Vec<String>,
+) -> Result<SuccessResult, FailResult> {
+  let composition_parameters = io::deseralizer::deserialize_string(composition_yaml)?;
+  let composition = parameters_to_composition(&composition_parameters)?;
+  play(
+    &composition,
+    performance_state,
+    is_metronome_enabled,
+    sample_paths_metronome,
+    sample_paths_piano,
+  )
+}
+
 pub fn play_file_from<State: performance_engine::PerformanceState>(
   composition_path: &str,
   performance_state: &mut State,
@@ -150,22 +194,41 @@ pub fn play_file_from<State: performance_engine::PerformanceState>(
   sample_paths_metronome: &Vec<String>,
   sample_paths_piano: &Vec<String>,
   playback_start: &music_timer::music_time::MusicTime,
-  pattern_start: &str,
+  pattern_start_name: &str,
 ) -> Result<SuccessResult, FailResult> {
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
   let composition = parameters_to_composition(&composition_parameters)?;
-
-  let mut performance_engine = performance_engine::PerformanceEngine::new(
+  play_from(
     &composition,
     performance_state,
+    is_metronome_enabled,
     sample_paths_metronome,
     sample_paths_piano,
-  )?;
+    playback_start,
+    pattern_start_name,
+  )
+}
 
-  performance_engine.set_metronome_enabled(is_metronome_enabled);
-  performance_engine.run();
-
-  Ok(SuccessResult::Playback)
+pub fn play_yaml_from<State: performance_engine::PerformanceState>(
+  composition_yaml: &str,
+  performance_state: &mut State,
+  is_metronome_enabled: bool,
+  sample_paths_metronome: &Vec<String>,
+  sample_paths_piano: &Vec<String>,
+  playback_start: &music_timer::music_time::MusicTime,
+  pattern_start_name: &str,
+) -> Result<SuccessResult, FailResult> {
+  let composition_parameters = io::deseralizer::deserialize_string(composition_yaml)?;
+  let composition = parameters_to_composition(&composition_parameters)?;
+  play_from(
+    &composition,
+    performance_state,
+    is_metronome_enabled,
+    sample_paths_metronome,
+    sample_paths_piano,
+    playback_start,
+    pattern_start_name,
+  )
 }
 
 /// Export a template composition yaml file.

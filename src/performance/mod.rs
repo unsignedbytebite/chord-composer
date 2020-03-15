@@ -80,21 +80,15 @@ mod tests {
 
     let composition = {
       let mut composition = composition::Composition::new("test compo");
-      let mut pattern = composition::Pattern::new(
-        "pattern_z",
-        140,
-        time_signature::TimeSignature::default(),
-      );
+      let mut pattern =
+        composition::Pattern::new("pattern_z", 140, time_signature::TimeSignature::default());
 
       pattern.push_event(music_time::MusicTime::new(1, 3, 1), Vec::new());
       pattern.push_event(music_time::MusicTime::new(3, 1, 1), Vec::new());
       composition.push_pattern(pattern);
 
-      let mut pattern = composition::Pattern::new(
-        "pattern_y",
-        130,
-        time_signature::TimeSignature::default(),
-      );
+      let mut pattern =
+        composition::Pattern::new("pattern_y", 130, time_signature::TimeSignature::default());
 
       pattern.push_event(music_time::MusicTime::new(1, 3, 1), Vec::new());
       pattern.push_event(music_time::MusicTime::new(3, 1, 1), Vec::new());
@@ -152,11 +146,8 @@ mod tests {
 
     let composition = {
       let mut composition = composition::Composition::new("test compo");
-      let mut pattern = composition::Pattern::new(
-        "pattern_z",
-        140,
-        time_signature::TimeSignature::default(),
-      );
+      let mut pattern =
+        composition::Pattern::new("pattern_z", 140, time_signature::TimeSignature::default());
 
       pattern.push_event(music_time::MusicTime::new(1, 3, 1), Vec::new());
       pattern.push_event(music_time::MusicTime::new(5, 1, 1), Vec::new());
@@ -176,7 +167,7 @@ mod tests {
     match performance_engine {
       Ok(mut performance) => {
         performance.set_metronome_enabled(true);
-        performance.run_from(&music_time::MusicTime::new(4, 3, 5));
+        performance.run_from(&music_time::MusicTime::new(4, 3, 5), 0);
       }
       _ => assert!(false, "Cannot create performance engine"),
     }
