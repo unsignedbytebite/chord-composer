@@ -449,35 +449,35 @@ fn test_new_composition() {
 
   let (time, notes) = compo.get(0).get(0);
   assert_eq!(time, &music_time::MusicTime::new(1, 1, 1));
-  assert_eq!(notes, &vec![50, 54, 57, 61]);
+  assert_eq!(notes, &vec![62, 66, 69, 73]);
 
   let (time, notes) = compo.get(0).get(1);
   assert_eq!(time, &music_time::MusicTime::new(1, 3, 1));
-  assert_eq!(notes, &vec![50, 53, 58]);
+  assert_eq!(notes, &vec![62, 65, 70]);
 
   let (time, notes) = compo.get(0).get(2);
   assert_eq!(time, &music_time::MusicTime::new(2, 1, 1));
-  assert_eq!(notes, &vec![50, 54, 57, 61, 52]);
+  assert_eq!(notes, &vec![62, 66, 69, 73, 64]);
 
   let (time, notes) = compo.get(0).get(7);
   assert_eq!(time, &music_time::MusicTime::new(4, 2, 1));
-  assert_eq!(notes, &vec![47, 50, 55]);
+  assert_eq!(notes, &vec![59, 62, 67]);
 
   let (time, notes) = compo.get(1).get(0);
   assert_eq!(time, &music_time::MusicTime::new(1, 1, 1));
-  assert_eq!(notes, &vec![49, 53, 56, 60]);
+  assert_eq!(notes, &vec![61, 65, 68, 72]);
 
   let (time, notes) = compo.get(1).get(1);
   assert_eq!(time, &music_time::MusicTime::new(1, 2, 1));
-  assert_eq!(notes, &vec![49, 52, 57]);
+  assert_eq!(notes, &vec![61, 64, 69]);
 
   let (time, notes) = compo.get(1).get(2);
   assert_eq!(time, &music_time::MusicTime::new(2, 1, 1));
-  assert_eq!(notes, &vec![49, 53, 56, 60, 51]);
+  assert_eq!(notes, &vec![61, 65, 68, 72, 63]);
 
   let (time, notes) = compo.get(1).get(7);
   assert_eq!(time, &music_time::MusicTime::new(4, 2, 1));
-  assert_eq!(notes, &vec![49, 52, 57]);
+  assert_eq!(notes, &vec![61, 64, 69]);
 }
 
 #[test]

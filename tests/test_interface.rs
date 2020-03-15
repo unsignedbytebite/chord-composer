@@ -216,23 +216,23 @@ fn play_composition() {
 //   assert!(false, "TODO");
 // }
 
-// #[test]
-// fn play_composition_file() {
-//   use music_timer::music_time::MusicTime;
-//   let file = "./tests/middle_c.yaml";
-//   let mut my_state = MyState {
-//     callback_calls: 0,
-//     current_time: MusicTime::default(),
-//   };
+#[test]
+fn play_composition_file() {
+  use music_timer::music_time::MusicTime;
+  let file = "./tests/middle_c.yaml";
+  let mut my_state = MyState {
+    callback_calls: 0,
+    current_time: MusicTime::default(),
+  };
 
-//   assert_eq!(
-//     chord_composer::play_file(file, &mut my_state, false, &Vec::new(), &Vec::new()),
-//     Ok(chord_composer::SuccessResult::Playback)
-//   );
+  assert_eq!(
+    chord_composer::play_file(file, &mut my_state, false, &Vec::new(), &Vec::new()),
+    Ok(chord_composer::SuccessResult::Playback)
+  );
 
-//   assert_eq!(my_state.callback_calls, 33);
-//   assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
-// }
+  assert_eq!(my_state.callback_calls, 33);
+  assert_eq!(my_state.current_time, MusicTime::new(1, 3, 8));
+}
 
 // #[test]
 // fn export_midi_api() {
