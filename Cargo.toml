@@ -1,28 +1,35 @@
 [package]
-name = "chord-composer"
-version = "0.2.9"
-authors = ["cj <unsignedbytebite@gmail.com>"]
-edition = "2018"
-license = "MIT"
-readme = "README.md"
-repository = "https://github.com/unsignedbytebite/chord-composer"
-description = """
+name = 'chord-composer'
+version = '0.3.0'
+authors = ['cj <unsignedbytebite@gmail.com>']
+edition = '2018'
+license = 'MIT'
+readme = 'README.md'
+repository = 'https://github.com/unsignedbytebite/chord-composer'
+description = '''
 A music composition tool for structuring chord progressions and patterns.
-"""
-keywords = ["music", "composing", "chords"]
-categories = ["multimedia::audio"]
+'''
+keywords = [
+    'music',
+    'composing',
+    'chords',
+]
+categories = ['multimedia::audio']
 autobenches = true
 
 [features]
-default=["with-sound"]
-with-sound = ["rodio"]
+default = ['with-sound']
+with-sound = ['rodio']
 
 [dependencies]
-rodio = {version ="0.10.0", optional = true} 
-stopwatch = "0.0.7"
-serde = "1.0.104"
-serde_yaml = "0.8.11"
-serde_derive = "1.0.104"
-ghakuf = "0.5.4"
-rand = "0.7.3"
-music-timer = {path="../music-timer"}
+stopwatch = '0.0.7'
+serde = '1.0.104'
+serde_yaml = '0.8.11'
+serde_derive = '1.0.104'
+ghakuf = '0.5.4'
+rand = '0.7.3'
+music-timer = '0.1.6'
+
+[dependencies.rodio]
+version = '0.10.0'
+optional = true

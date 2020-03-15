@@ -11,7 +11,7 @@ use performance::performance_engine;
 use std::{io::Write, path::Path};
 use theory::{chords, composition, notes};
 
-/// Enum for differing resulting failures.
+/// Possible failures.
 #[derive(Debug, PartialEq)]
 pub enum FailResult {
   Deserialize,
@@ -26,7 +26,7 @@ pub enum FailResult {
   LoadSampler,
 }
 
-/// Enum for differing resulting successes.
+/// Possible successes.
 #[derive(Debug, PartialEq)]
 pub enum SuccessResult {
   Export(Vec<String>),
@@ -34,11 +34,20 @@ pub enum SuccessResult {
   Playback,
 }
 
-/// Returns all the internal chord keywords supported in composition yaml files.
+/// Returns all the internally supported chord keywords.
+/// * Interpreted when parsing composition YAML.
+/// * Case sensitive.
+/// * Considered for future removal.
 pub fn get_chord_keywords() -> Vec<&'static str> {
   theory::chords::chord_to_string_array()
 }
 
+/// Export a composition to a midi files. Each pattern will be
+/// exported as a different midi file.
+///
+/// # Arguments
+/// * `composition` - The composition to export from.
+/// * `export_path` - The path to export the midi patterns.
 pub fn export_to_midi_file(
   composition: &composition::Composition,
   export_path: &str,
@@ -52,10 +61,12 @@ pub fn export_to_midi_file(
   io::exporter::export_composition(&composition, parent_directory)
 }
 
-/// Export composition patterns to midi files.
+/// Load a composition then export it to midi files. Each pattern will be
+/// exported as a different midi file.
 ///
 /// # Arguments
-/// * `composition_path` - The file path to the composition yaml file.
+/// * `composition_path` - The file path to the composition YAML file and the export path
+/// of the midi files.
 pub fn export_file_to_midi(composition_path: &str) -> Result<SuccessResult, FailResult> {
   let composition_parameters = io::deseralizer::deserialize_file(composition_path)?;
   let composition = parameters_to_composition(&composition_parameters)?;
@@ -63,6 +74,16 @@ pub fn export_file_to_midi(composition_path: &str) -> Result<SuccessResult, Fail
   export_to_midi_file(&composition, composition_path)
 }
 
+/// Helper to build music events. Chord intervals will be transposed and
+/// converted to midi key values in the returned `PatternEvent`.
+///
+/// # Arguments
+/// * `bar` - The bar for the music event.
+/// * `beat` - The beat of the msuic event.
+/// * `beat_interval` - The interval value between beats. There are 8
+/// * `beat_intervals` in a `beat`, this is the same as a 16th.
+/// * `chord_intervals` - The note intervals in the chord.
+/// * `transpose` - The transpose of all the chord intervals.
 pub fn build_event(
   bar: u16,
   beat: u8,
@@ -78,6 +99,19 @@ pub fn build_event(
   )
 }
 
+/// Play a composition starting from composition's pattern index
+/// and time.
+///
+/// # Arguments
+/// * `composition` - The composition to play.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
+/// * `playback_start` - The `MusicTime` to begin playback at.
+/// * `pattern_start_index` - The index of the `MusicPattern` to begin from.
 pub fn play_from_index<State: performance_engine::PerformanceState>(
   composition: &composition::Composition,
   performance_state: &mut State,
@@ -99,6 +133,122 @@ pub fn play_from_index<State: performance_engine::PerformanceState>(
   Ok(SuccessResult::Playback)
 }
 
+/// Play a composition starting from a composition's pattern name
+/// and time.
+///
+/// # Arguments
+/// * `composition` - The composition to play.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
+/// * `playback_start` - The `MusicTime` to begin playback at.
+/// * `pattern_start_name` - The name of the `MusicPattern` to begin from.
+///
+/// # Example
+/// ```
+/// struct MyState {
+///   events: u16,
+///   current_time: MusicTime,
+/// }
+/// impl PerformanceState for MyState {
+///   fn on_ready(&mut self, _composition: &Composition) {
+///     println!("on_ready");
+///   }
+///   fn on_beat_interval_change(&mut self, current_time: &MusicTime) {
+///     self.current_time = current_time.clone();
+///     println!("on_beat_interval_change: {:?}", current_time);
+///   }
+///   fn on_beat_change(&mut self, current_time: &MusicTime) {
+///     println!("on_beat_change: {:?}", current_time);
+///   }
+///   fn on_bar_change(&mut self, current_time: &MusicTime) {
+///     println!("on_bar_change: {:?}", current_time);
+///   }
+///   fn on_event(&mut self, event: &PatternEvent) {
+///     self.events += 1;
+///
+///     if self.events == 1 {
+///       assert_eq!(event, &chord_composer::build_event(2, 1, 1, vec![1], -1));
+///     } else if self.events == 2 {
+///       assert_eq!(event, &chord_composer::build_event(3, 5, 1, vec![2], -2));
+///     }
+///     println!("on_event");
+///   }
+///   fn on_pattern_playback_begin(&mut self, _pattern: &Pattern) {
+///     println!("on_pattern_playback_begin");
+///   }
+///   fn on_pattern_playback_end(&mut self, _pattern: &Pattern) {
+///     println!("on_pattern_playback_end");
+///   }
+///   fn on_completed(&mut self, composition: &Composition) {
+///     assert_eq!(composition.get_name(), "test compo");
+///     println!("on_completed");
+///   }
+/// }
+///
+/// let composition = Composition::new_with_patterns(
+///   "test compo",
+///   vec![
+///     Pattern::new_with_events(
+///       "a",
+///       100,
+///       TimeSignature::default(),
+///       vec![
+///         chord_composer::build_event(1, 1, 1, vec![0, 3, 7], 0),
+///         chord_composer::build_event(2, 1, 1, vec![0, 3, 7], 1),
+///         chord_composer::build_event(3, 5, 1, vec![0, 3, 7], 2),
+///       ],
+///     ),
+///     Pattern::new_with_events(
+///       "b",
+///       150,
+///       TimeSignature::new(7, 4),
+///       vec![
+///         chord_composer::build_event(3, 5, 1, vec![2], -2),
+///         chord_composer::build_event(2, 1, 1, vec![1], -1),
+///         chord_composer::build_event(1, 1, 1, vec![0], 0),
+///       ],
+///     ),
+///   ],
+/// );
+///
+/// let mut my_state = MyState {
+///   events: 0,
+///   current_time: MusicTime::default(),
+/// };
+///
+/// assert_eq!(
+///   chord_composer::play_from(
+///     &composition,
+///     &mut my_state,
+///     false,
+///     &Vec::new(),
+///     &Vec::new(),
+///     &MusicTime::new(2, 1, 1),
+///     "b"
+///   ),
+///   Ok(SuccessResult::Playback),
+/// );
+///
+/// assert_eq!(my_state.events, 2);
+/// assert_eq!(my_state.current_time, MusicTime::new(3, 7, 8));
+///
+/// assert_eq!(
+///   chord_composer::play_from(
+///     &composition,
+///     &mut my_state,
+///     false,
+///     &Vec::new(),
+///     &Vec::new(),
+///     &MusicTime::new(2, 1, 1),
+///     "c"
+///   ),
+///   Err(FailResult::NoFoundPattern("c".to_owned())),
+/// );
+/// ```
 pub fn play_from<State: performance_engine::PerformanceState>(
   composition: &composition::Composition,
   performance_state: &mut State,
@@ -127,6 +277,16 @@ pub fn play_from<State: performance_engine::PerformanceState>(
   }
 }
 
+/// Play a composition and all it's patterns from the start.
+///
+/// # Arguments
+/// * `composition` - The composition to play.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
 pub fn play<State: performance_engine::PerformanceState>(
   composition: &composition::Composition,
   performance_state: &mut State,
@@ -145,12 +305,16 @@ pub fn play<State: performance_engine::PerformanceState>(
   )
 }
 
-/// Play composition patterns.
+/// Load a YAML file of a composition then play all it's patterns from the start.
 ///
 /// # Arguments
-/// * `composition_path` - The file path to the composition yaml file.
-/// * `performance_state` - The composition playback performance state.
-/// * `is_metronome_enabled` - If `true` a metronome will be played on playback.
+/// * `composition_path` - Path to the composition YAML file.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
 pub fn play_file<State: performance_engine::PerformanceState>(
   composition_path: &str,
   performance_state: &mut State,
@@ -169,6 +333,16 @@ pub fn play_file<State: performance_engine::PerformanceState>(
   )
 }
 
+/// Parse YAML of a composition then play all it's patterns from the start.
+///
+/// # Arguments
+/// * `composition_yaml` - Composition YAML.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
 pub fn play_yaml<State: performance_engine::PerformanceState>(
   composition_yaml: &str,
   performance_state: &mut State,
@@ -187,6 +361,19 @@ pub fn play_yaml<State: performance_engine::PerformanceState>(
   )
 }
 
+/// Load a YAML file of a composition then play it's patterns starting from a composition's pattern name
+/// and time.
+///
+/// # Arguments
+/// * `composition_path` - Path to the composition YAML file.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
+/// * `playback_start` - The `MusicTime` to begin playback at.
+/// * `pattern_start_name` - The name of the `MusicPattern` to begin from.
 pub fn play_file_from<State: performance_engine::PerformanceState>(
   composition_path: &str,
   performance_state: &mut State,
@@ -209,6 +396,19 @@ pub fn play_file_from<State: performance_engine::PerformanceState>(
   )
 }
 
+/// Parse YAML of a composition then play all it's patterns starting from a composition's pattern name
+/// and time.
+///
+/// # Arguments
+/// * `composition_yaml` - Path to the composition YAML file.
+/// * `performance_state` - The state performance with callbacks to be triggered.
+/// * `is_metronome_enabled` - Set if the metronome is to be played during playback.
+/// This is only relevant when `sample_paths_metronome` contains audio file paths
+/// and the compiler feature `with-sound` is used.
+/// * `sample_paths_metronome` - Paths to the 2 metronome audio files, tick and tock.
+/// * `sample_paths_piano` - Paths to the playback instrument audio files.
+/// * `playback_start` - The `MusicTime` to begin playback at.
+/// * `pattern_start_name` - The name of the `MusicPattern` to begin from.
 pub fn play_yaml_from<State: performance_engine::PerformanceState>(
   composition_yaml: &str,
   performance_state: &mut State,
@@ -231,7 +431,7 @@ pub fn play_yaml_from<State: performance_engine::PerformanceState>(
   )
 }
 
-/// Export a template composition yaml file.
+/// Export a template of a composition YAML file to a path.
 ///
 /// # Arguments
 /// * `path` - The path to export the template to.
@@ -307,7 +507,7 @@ patterns:
   }
 }
 
-/// Convert deserialized composition parameters to a `Composition` data type that.
+/// Convert YAML deserialized composition parameters to a `Composition` data type.
 ///
 /// # Arguments
 /// * `params` - The `CompositionParameters` to convert into a `Composition`.

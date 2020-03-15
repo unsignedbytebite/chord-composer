@@ -8,7 +8,7 @@ The philosophy behind **Chord Composer** is to make a lightweight, portable, and
 
 ## Features
 
-- Describe compositions with patterns in `YAML`.
+- Describe compositions with patterns in `YAML` or via the **API**.
 - Export _composition patterns_ to `MIDI` clips.
 - Playback _composition patterns_ with audio samples.
 
@@ -16,8 +16,7 @@ The philosophy behind **Chord Composer** is to make a lightweight, portable, and
 
 - Develop better audio engine and instrument sampler.
 - Support `MIDI` routing.
-- Explore the need to support common msuic trackers.
-
+- Explore the need to support common music trackers.
 
 ## Composition Parameters `YAML` file
 
