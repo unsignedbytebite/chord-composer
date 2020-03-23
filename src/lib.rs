@@ -99,7 +99,7 @@ pub fn build_event(
   )
 }
 
-/// Play a composition starting from composition's pattern index
+/// Play a composition starting from the composition's pattern index
 /// and time.
 ///
 /// # Arguments
