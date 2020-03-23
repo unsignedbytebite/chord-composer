@@ -1,6 +1,6 @@
 [package]
 name = 'chord-composer'
-version = '0.3.0'
+version = '0.3.1'
 authors = ['cj <unsignedbytebite@gmail.com>']
 edition = '2018'
 license = 'MIT'
